@@ -18,6 +18,8 @@ model gateway {
   name         String   @db.VarChar(255)
   mac_addr     String   @db.VarChar(255)
   check_point  Boolean  @default(false)
+  plan_x       Float?
+  plan_y       Float?
   data         beacon[]
 }
 

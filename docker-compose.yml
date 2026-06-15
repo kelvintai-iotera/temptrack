@@ -1,5 +1,6 @@
 volumes:
     postgres-db-data:
+    app-uploads:
 
 services:
     postgresql-db:
@@ -45,7 +46,9 @@ services:
         dockerfile: nodeapp/Dockerfile
         args:
           GIT_COMMIT: ${GIT_COMMIT:-unknown}
-      env_file: ./.env
+      volumes:
+      - app-uploads:/app/uploads
+    env_file: ./.env
       environment:
         - TZ=Asia/Hong_Kong
         - PORT=${NODE_DOCKER_PORT:-3011}

@@ -7,6 +7,7 @@ import { Login } from './components/Login';
 import { Settings } from './components/Settings';
 import { Alerts } from './components/Alerts';
 import { History } from './components/History';
+import { FloorPlan } from './components/FloorPlan';
 import { ConnectionBanner } from './components/ConnectionBanner';
 import { UserAvatar } from './components/UserAvatar';
 import { BeaconProvider } from './context/BeaconContext';
@@ -23,6 +24,7 @@ import {
   Menu,
   X,
   ChevronDown,
+  Map,
 } from 'lucide-react';
 import { getSettingsSections, getSettingsPageTitle, getSettingsSubPath, settingsSectionPath, SETTINGS_DEFAULT_PATH } from './utils/settingsNav';
 
@@ -30,6 +32,7 @@ const TAB_TITLE_MAP = {
   dashboard: 'Dashboard',
   'real-time': 'Real Time Status',
   history: 'History',
+  'floor-plan': 'Floor Plan',
   alerts: 'Temperature Alerts',
   settings: 'Settings',
 };
@@ -184,7 +187,8 @@ function AppContent() {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/real-time" element={<RealTimeStatus currentUser={user} />} />
                 <Route path="/settings/*" element={<Settings currentUser={user} />} />
-                <Route path="/history" element={<History />} />
+                <Route path="/history" element={<History currentUser={user} />} />
+                <Route path="/floor-plan" element={<FloorPlan currentUser={user} />} />
                 <Route path="/alerts" element={<Alerts currentUser={user} />} />
                 <Route path="*" element={<NotFoundView />} />
               </Routes>
@@ -256,6 +260,12 @@ function SidebarNav({ activeTab, location, navigate, onLogout, onCloseMobile, us
           onClick={() => navigate('/history')}
         />
         <NavItem
+          icon={<Map size={20} />}
+          label="Floor Plan"
+          active={activeTab === 'floor-plan'}
+          onClick={() => navigate('/floor-plan')}
+        />
+        <NavItem
           icon={<Bell size={20} />}
           label="Alerts"
           active={activeTab === 'alerts'}
@@ -268,7 +278,7 @@ function SidebarNav({ activeTab, location, navigate, onLogout, onCloseMobile, us
             onClick={handleSettingsToggle}
             aria-expanded={settingsOpen}
             aria-current={activeTab === 'settings' ? 'page' : undefined}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan/50 ${
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan/50 ${
               activeTab === 'settings'
                 ? 'bg-cyan-100 text-cyan-800 ring-1 ring-cyan-300 dark:bg-accent-cyan/10 dark:text-accent-cyan dark:ring-accent-cyan/20'
                 : 'text-muted hover:text-foreground hover:bg-[var(--color-panel-hover)]'
@@ -416,7 +426,7 @@ const NavItem = ({ icon, label, active, onClick, badge }) => (
     type="button"
     onClick={onClick}
     aria-current={active ? 'page' : undefined}
-    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan/50 ${
+    className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 w-full text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan/50 ${
       active
         ? 'bg-cyan-100 text-cyan-800 ring-1 ring-cyan-300 dark:bg-accent-cyan/10 dark:text-accent-cyan dark:ring-accent-cyan/20'
         : 'text-muted hover:text-foreground hover:bg-[var(--color-panel-hover)]'

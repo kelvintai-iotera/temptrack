@@ -83,7 +83,8 @@ function FilterRow({ row, onChange, onRemove, canRemove }) {
   );
 }
 
-export const History = () => {
+export const History = ({ currentUser }) => {
+  const isAdmin = currentUser?.role === 'admin';
   const [mode, setMode] = useState('builder');
   const [filters, setFilters] = useState([defaultFilterRow()]);
   const [sqlText, setSqlText] = useState(DEFAULT_SQL);
@@ -229,10 +230,12 @@ export const History = () => {
             <Play size={16} />
             {loading ? 'Running…' : 'Run Query'}
           </Button>
-          <Button variant="secondary" onClick={exportCsv} disabled={exporting}>
-            <Download size={16} />
-            {exporting ? 'Exporting…' : 'Export CSV'}
-          </Button>
+          {isAdmin && (
+            <Button variant="secondary" onClick={exportCsv} disabled={exporting}>
+              <Download size={16} />
+              {exporting ? 'Exporting…' : 'Export CSV'}
+            </Button>
+          )}
         </div>
       </div>
 

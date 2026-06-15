@@ -67,9 +67,43 @@ h1, h2, h3, h4 {
 }
 
 .glass-panel {
-  @apply backdrop-blur-md rounded-2xl border;
+  @apply rounded-xl border shadow-sm;
   background-color: var(--color-card);
   border-color: var(--color-border);
+}
+
+.panel {
+  @apply rounded-xl border p-4 md:p-6;
+  background-color: var(--color-card);
+  border-color: var(--color-border);
+}
+
+.page-shell {
+  @apply p-4 md:p-8 max-w-6xl mx-auto flex flex-col gap-6;
+}
+
+.page-header {
+  @apply flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4;
+}
+
+.page-title {
+  @apply text-xl md:text-2xl font-bold font-display;
+}
+
+.page-subtitle {
+  @apply text-sm text-muted mt-1 max-w-2xl;
+}
+
+.alert {
+  @apply text-sm rounded-xl px-4 py-3 border;
+}
+
+.alert-danger {
+  @apply text-danger border-danger/30 bg-danger-muted;
+}
+
+.alert-success {
+  @apply text-success border-success/30 bg-success-muted;
 }
 
 .accent-gradient {

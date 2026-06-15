@@ -12,6 +12,7 @@ const logger = loggerFactory('beacon-history-api')
 const MAX_RECORD = c.HISTORY_API_PAGE_RECORD
 const QUERY_MAX = c.HISTORY_QUERY_MAX_RECORD
 const EXPORT_MAX = c.HISTORY_EXPORT_MAX_RECORD
+const OFFSET_MAX = 50000
 
 class BeaconHistoryApi {
     async getAll(startPage) {
@@ -52,7 +53,7 @@ class BeaconHistoryApi {
             const orderField = validateOrderField(parsed.orderBy)
             const orderDir = validateOrderDir(parsed.orderDir)
             const take = Math.min(Math.max(parseInt(parsed.limit, 10) || MAX_RECORD, 1), QUERY_MAX)
-            const skip = Math.max(parseInt(parsed.offset, 10) || 0, 0)
+            const skip = Math.min(Math.max(parseInt(parsed.offset, 10) || 0, 0), OFFSET_MAX)
             const where = buildWhereFromFilters(parsed.filters)
 
             const [rows, total] = await Promise.all([

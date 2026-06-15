@@ -17,6 +17,7 @@ import { ParamRepository } from './param/param-repository.js';
 import { MqttProcessor } from './mqtt/mqtt-processor.js';
 import { ScheduleTask } from './job/schedule-task.js';
 import { addSettingsRouter } from './settings/settings-router.js';
+import { addFloorPlanRouter } from './floor-plan/floor-plan-router.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -35,14 +36,14 @@ function initApp() {
                 defaultSrc: ["'self'"],
                 scriptSrc: ["'self'", "'unsafe-inline'"],
                 styleSrc: ["'self'", "'unsafe-inline'"],
-                imgSrc: ["'self'", "data:"],
+                imgSrc: ["'self'", "data:", "blob:"],
                 connectSrc: ["'self'", "wss:", "ws:"],
             },
         },
         crossOriginResourcePolicy: { policy: 'cross-origin' },
     }));
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: false }));
+    app.use(express.json({ limit: '256kb' }));
+    app.use(express.urlencoded({ extended: false, limit: '256kb' }));
     app.use(cookieParser());
     app.use(express.static(join(__dirname, '../public')));
 
@@ -106,6 +107,7 @@ class MyApp {
         }))
         app.use('/beacons', authMiddleware, addBeaconRouter(this._beaconRepository, this._mqttProcessor))
         app.use('/history', authMiddleware, addHistoryRouter())
+        app.use('/floor-plan', addFloorPlanRouter())
 
         // Serve the dashboard for any other routes (SPA support)
         app.get('*', (req, res) => {

@@ -97,15 +97,15 @@ async function main() {
   await fixMisassignedOfficeDeskBeacon()
 
   const hashedPassword = await bcrypt.hash('admin123', 10)
-  const adminUser = await prisma.user.upsert({
-    where: { username: 'admin' },
-    update: { password: hashedPassword, role: 'admin' },
-    create: {
+  const existingAdmin = await prisma.user.findUnique({ where: { username: 'admin' } })
+  if (!existingAdmin) {
+    await prisma.user.create({
       username: 'admin',
       password: hashedPassword,
-      role: 'admin'
-    }
-  })
+      role: 'admin',
+    })
+    console.log('Created default admin user (change password after first login)')
+  }
   const gateway1 = await prisma.gateway.upsert({
     where: { id: WORKSHOP_ID },
     update: { name: WORKSHOP_ID },

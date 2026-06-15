@@ -1,5 +1,6 @@
 import { loggerFactory } from '../../config/logger.js';
 import express from 'express'
+import { adminMiddleware } from '../auth/auth-middleware.js';
 import { BeaconHistoryApi } from './history-api.js';
 
 const logger = loggerFactory("history-router")
@@ -19,7 +20,7 @@ function addHistoryRouter(){
         }
     })
 
-    router.post('/export', async (req, res) => {
+    router.post('/export', adminMiddleware, async (req, res) => {
         try {
             const csv = await api.exportCsv(req.body || {})
             const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')

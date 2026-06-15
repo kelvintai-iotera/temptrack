@@ -63,37 +63,10 @@ function TemperatureBarChart({ data, thresholds, onBeaconClick }) {
   const slotWidth = plotWidth / data.length;
   const barWidth = Math.min(48, slotWidth * 0.65);
   const gridTemps = [10, 15, 20, 25, 30, 35, 40, 45];
-  const warnC = thresholds?.tempWarnC ?? 32;
-  const criticalC = thresholds?.tempCriticalC ?? 36;
-  const thresholdLines = [
-    { temp: warnC, color: '#ea580c', label: `Warn ${warnC}°C` },
-    { temp: criticalC, color: '#dc2626', label: `Critical ${criticalC}°C` },
-  ].filter((line) => line.temp >= chartMinTemp && line.temp <= chartMaxTemp);
 
   return (
     <div className="w-full overflow-x-auto">
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-[360px]" style={{ minWidth: `${Math.min(width, 1200)}px` }}>
-        {thresholdLines.map((line) => {
-          const y = tempToPlotY(line.temp, topPad, plotHeight);
-          return (
-            <g key={line.label}>
-              <line
-                x1={leftPad}
-                y1={y}
-                x2={width - rightPad}
-                y2={y}
-                stroke={line.color}
-                strokeWidth="1.5"
-                strokeDasharray="6 4"
-                opacity="0.85"
-              />
-              <text x={width - rightPad + 4} y={y + 4} fontSize="9" fill={line.color}>
-                {line.label}
-              </text>
-            </g>
-          );
-        })}
-
         {gridTemps.map((t) => {
           const y = tempToPlotY(t, topPad, plotHeight);
           return (

@@ -46,7 +46,7 @@ router.post('/login', loginRateLimiter, async (req, res) => {
             (err, token) => {
                 if (err) throw err;
                 res.cookie(AUTH_COOKIE_NAME, token, getAuthCookieOptions());
-                res.json({ token, user: payload.user });
+                res.json({ user: payload.user });
             }
         );
     } catch (err) {

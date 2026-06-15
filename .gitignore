@@ -9,6 +9,10 @@ node_modules/
 # Frontend build output (generated in nodeapp/public)
 nodeapp/public/
 
+# Runtime uploads and TLS keys
+nodeapp/uploads/
+nodeapp/sslcert/*.pem
+
 # macOS / archive junk
 __MACOSX/
 .DS_Store

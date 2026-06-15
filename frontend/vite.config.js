@@ -21,6 +21,7 @@ export default defineConfig({
       '/beacons': proxyOptions,
       '/history': proxyOptions,
       '/settings': proxyOptions,
+      '/floor-plan': proxyOptions,
       '/socket.io': {
         ...proxyOptions,
         ws: true,
