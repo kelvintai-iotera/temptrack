@@ -18,7 +18,12 @@ import {
   Pencil,
   X,
   Check,
+  Sun,
+  Moon,
+  Monitor,
+  Palette,
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 const PARAM_FIELDS = [
   { key: 'BEACON_OUT_TIME', label: 'Beacon offline timeout (seconds)', type: 'number', min: 5, max: 3600 },
@@ -29,6 +34,7 @@ const PARAM_FIELDS = [
 ];
 
 const SETTINGS_NAV = [
+  { id: 'settings-appearance', label: 'Appearance', adminOnly: false },
   { id: 'settings-password', label: 'Password', adminOnly: false },
   { id: 'settings-status', label: 'System Status', adminOnly: true },
   { id: 'settings-gateway', label: 'Gateways', adminOnly: true },
@@ -68,6 +74,10 @@ export const Settings = ({ currentUser }) => {
         </nav>
 
         <div className="flex-1 flex flex-col gap-8 min-w-0">
+          <section id="settings-appearance" className="scroll-mt-20">
+            <AppearanceSection />
+          </section>
+
           <section id="settings-password" className="scroll-mt-20">
             <ChangePasswordSection />
           </section>
@@ -93,6 +103,75 @@ export const Settings = ({ currentUser }) => {
     </div>
   );
 };
+
+const APPEARANCE_OPTIONS = [
+  {
+    id: 'light',
+    label: 'Light',
+    description: 'Always use light theme',
+    icon: Sun,
+  },
+  {
+    id: 'dark',
+    label: 'Dark',
+    description: 'Always use dark theme',
+    icon: Moon,
+  },
+  {
+    id: 'system',
+    label: 'System',
+    description: 'Match your device setting',
+    icon: Monitor,
+  },
+];
+
+function AppearanceSection() {
+  const { theme, resolvedTheme, setTheme } = useTheme();
+
+  return (
+    <div className="glass-panel p-6">
+      <div className="flex items-center gap-2 mb-1">
+        <Palette className="text-accent-cyan" size={22} />
+        <h2 className="text-xl font-bold font-display">Appearance</h2>
+      </div>
+      <p className="text-sm text-muted mb-6">
+        Choose how TempTrack looks. Your preference is saved on this device.
+        {theme === 'system' && (
+          <span className="block mt-1 text-xs">
+            Currently using {resolvedTheme === 'dark' ? 'dark' : 'light'} (from system).
+          </span>
+        )}
+      </p>
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3" role="radiogroup" aria-label="Theme">
+        {APPEARANCE_OPTIONS.map(({ id, label, description, icon: Icon }) => {
+          const selected = theme === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => setTheme(id)}
+              className={`text-left p-4 rounded-xl border transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan/50 ${
+                selected
+                  ? 'border-accent-cyan bg-cyan-50 dark:bg-accent-cyan/10 ring-1 ring-accent-cyan/30'
+                  : 'border-border bg-slate-50 dark:bg-black/20 hover:border-accent-cyan/40 hover:bg-[var(--color-panel-hover)]'
+              }`}
+            >
+              <Icon
+                size={22}
+                className={selected ? 'text-accent-cyan mb-2' : 'text-muted mb-2'}
+              />
+              <p className="font-semibold text-sm">{label}</p>
+              <p className="text-xs text-muted mt-1">{description}</p>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 function ChangePasswordSection() {
   const [currentPassword, setCurrentPassword] = useState('');
