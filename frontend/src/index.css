@@ -155,6 +155,20 @@ h1, h2, h3, h4 {
   box-shadow: none;
 }
 
+@keyframes rssi-peak-pulse {
+  0%, 100% { opacity: 1; transform: scaleY(1); }
+  50% { opacity: 0.72; transform: scaleY(0.88); }
+}
+
+.rssi-bar-peak {
+  transform-origin: bottom center;
+  animation: rssi-peak-pulse 1.6s ease-in-out infinite;
+}
+
+.rssi-bars-live .rssi-bar-peak {
+  box-shadow: 0 0 6px currentColor;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

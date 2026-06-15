@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Thermometer,
   Battery,
-  Signal,
   Clock,
   AlertTriangle,
   Router,
@@ -13,6 +12,7 @@ import { twMerge } from 'tailwind-merge';
 import { formatBeaconStatus } from '../utils/beaconDisplay';
 import { getTempAlertLevel } from '../utils/tempAlerts';
 import { useSettings } from '../context/SettingsContext';
+import { RssiSignal } from './RssiSignal';
 
 function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -125,12 +125,7 @@ export const BeaconCard = ({ beacon, isAdmin, onEdit, highlighted = false }) => 
           )}
         />
 
-        <Metric
-          icon={Signal}
-          label="RSSI"
-          value={beacon.rssi != null ? `${beacon.rssi} dBm` : '—'}
-          iconClass="text-purple-600 dark:text-purple-400"
-        />
+        <RssiSignal rssi={beacon.rssi} isLive={isOnline} />
 
         <div className="col-span-2 sm:col-span-1 flex items-center justify-between gap-2 min-w-0 lg:col-span-1">
           <Metric
