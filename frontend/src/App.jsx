@@ -22,7 +22,9 @@ import {
   Radio,
   Menu,
   X,
+  ChevronDown,
 } from 'lucide-react';
+import { getSettingsSections, scrollToSettingsSection } from './utils/settingsNav';
 
 const TAB_TITLE_MAP = {
   dashboard: 'Dashboard',
@@ -110,8 +112,10 @@ function AppContent() {
           <aside className="hidden md:flex w-64 shrink-0 border-r border-border flex-col p-6 gap-8 bg-card">
             <SidebarNav
               activeTab={activeTab}
+              location={location}
               navigate={navigate}
               onLogout={handleLogout}
+              onCloseMobile={() => setMobileNavOpen(false)}
               user={user}
             />
           </aside>
@@ -138,8 +142,10 @@ function AppContent() {
                 </div>
                 <SidebarNav
                   activeTab={activeTab}
+                  location={location}
                   navigate={navigate}
                   onLogout={handleLogout}
+                  onCloseMobile={() => setMobileNavOpen(false)}
                   user={user}
                 />
               </aside>
@@ -187,10 +193,46 @@ function AppContent() {
   );
 }
 
-function SidebarNav({ activeTab, navigate, onLogout, user }) {
+function SidebarNav({ activeTab, location, navigate, onLogout, onCloseMobile, user }) {
   const { beaconList } = useBeacons();
   const { config } = useSettings();
   const tempAlertCount = countTempAlerts(beaconList, config);
+  const isAdmin = user?.role === 'admin';
+  const settingsSections = getSettingsSections(isAdmin);
+  const [settingsOpen, setSettingsOpen] = useState(activeTab === 'settings');
+
+  useEffect(() => {
+    if (activeTab === 'settings') {
+      setSettingsOpen(true);
+    } else {
+      setSettingsOpen(false);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (activeTab !== 'settings' || !location.hash) return;
+    const sectionId = location.hash.replace('#', '');
+    const timer = setTimeout(() => scrollToSettingsSection(sectionId), 50);
+    return () => clearTimeout(timer);
+  }, [activeTab, location.hash]);
+
+  const activeSectionId = location.hash.replace('#', '');
+
+  const handleSettingsToggle = () => {
+    if (activeTab === 'settings') {
+      setSettingsOpen((open) => !open);
+      return;
+    }
+    navigate('/settings');
+    setSettingsOpen(true);
+  };
+
+  const handleSettingsSection = (sectionId) => {
+    navigate(`/settings#${sectionId}`);
+    setSettingsOpen(true);
+    onCloseMobile?.();
+    setTimeout(() => scrollToSettingsSection(sectionId), 50);
+  };
 
   return (
     <>
@@ -225,12 +267,48 @@ function SidebarNav({ activeTab, navigate, onLogout, user }) {
           badge={tempAlertCount > 0 ? tempAlertCount : null}
         />
         <div className="mt-4 pt-4 border-t border-border">
-          <NavItem
-            icon={<SettingsIcon size={20} />}
-            label="Settings"
-            active={activeTab === 'settings'}
-            onClick={() => navigate('/settings')}
-          />
+          <button
+            type="button"
+            onClick={handleSettingsToggle}
+            aria-expanded={settingsOpen}
+            aria-current={activeTab === 'settings' ? 'page' : undefined}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan/50 ${
+              activeTab === 'settings'
+                ? 'bg-cyan-100 text-cyan-800 ring-1 ring-cyan-300 dark:bg-accent-cyan/10 dark:text-accent-cyan dark:ring-accent-cyan/20'
+                : 'text-muted hover:text-foreground hover:bg-[var(--color-panel-hover)]'
+            }`}
+          >
+            <SettingsIcon size={20} />
+            <span className="font-medium flex-1 text-left">Settings</span>
+            <ChevronDown
+              size={18}
+              className={`shrink-0 transition-transform duration-200 ${settingsOpen ? 'rotate-180' : ''}`}
+              aria-hidden="true"
+            />
+          </button>
+
+          {settingsOpen && (
+            <div className="mt-1 ml-3 pl-3 border-l border-border flex flex-col gap-0.5" role="group" aria-label="Settings sections">
+              {settingsSections.map((item) => {
+                const isActive = activeTab === 'settings' && activeSectionId === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleSettingsSection(item.id)}
+                    aria-current={isActive ? 'true' : undefined}
+                    className={`text-left px-3 py-2 rounded-lg text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan/50 ${
+                      isActive
+                        ? 'text-accent-cyan bg-cyan-50 dark:bg-accent-cyan/10 font-medium'
+                        : 'text-muted hover:text-foreground hover:bg-[var(--color-panel-hover)]'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </nav>
 

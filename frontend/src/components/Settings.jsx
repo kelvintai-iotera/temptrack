@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useId } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from '../api/axiosSetup';
 import { useSettings } from '../context/SettingsContext';
 import { Button } from './ui/Button';
@@ -24,6 +25,7 @@ import {
   Palette,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { scrollToSettingsSection } from '../utils/settingsNav';
 
 const PARAM_FIELDS = [
   { key: 'BEACON_OUT_TIME', label: 'Beacon offline timeout (seconds)', type: 'number', min: 5, max: 3600 },
@@ -33,47 +35,23 @@ const PARAM_FIELDS = [
   { key: 'TEMP_CRITICAL_C', label: 'Temperature critical (°C)', type: 'number', step: '0.1' },
 ];
 
-const SETTINGS_NAV = [
-  { id: 'settings-appearance', label: 'Appearance', adminOnly: false },
-  { id: 'settings-password', label: 'Password', adminOnly: false },
-  { id: 'settings-status', label: 'System Status', adminOnly: true },
-  { id: 'settings-gateway', label: 'Gateways', adminOnly: true },
-  { id: 'settings-params', label: 'Parameters', adminOnly: true },
-  { id: 'settings-users', label: 'Users', adminOnly: true },
-];
-
 export const Settings = ({ currentUser }) => {
   const isAdmin = currentUser?.role === 'admin';
   const { refreshConfig } = useSettings();
+  const location = useLocation();
 
-  const navItems = SETTINGS_NAV.filter((item) => !item.adminOnly || isAdmin);
-
-  const scrollToSection = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
+  useEffect(() => {
+    const sectionId = location.hash.replace('#', '');
+    if (!sectionId) return;
+    const timer = setTimeout(() => scrollToSettingsSection(sectionId), 100);
+    return () => clearTimeout(timer);
+  }, [location.hash]);
 
   return (
-    <div className="p-4 md:p-8 max-w-6xl mx-auto">
+    <div className="p-4 md:p-8 max-w-4xl mx-auto">
       <p className="text-sm text-muted mb-6">Account security and system configuration.</p>
 
-      <div className="flex flex-col lg:flex-row gap-8">
-        <nav
-          className="lg:w-44 shrink-0 lg:sticky lg:top-4 self-start flex lg:flex-col gap-1 overflow-x-auto pb-2 lg:pb-0"
-          aria-label="Settings navigation"
-        >
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => scrollToSection(item.id)}
-              className="text-left px-3 py-2 rounded-lg text-sm text-muted hover:text-foreground hover:bg-[var(--color-panel-hover)] whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan/50"
-            >
-              {item.label}
-            </button>
-          ))}
-        </nav>
-
-        <div className="flex-1 flex flex-col gap-8 min-w-0">
+      <div className="flex flex-col gap-8 min-w-0">
           <section id="settings-appearance" className="scroll-mt-20">
             <AppearanceSection />
           </section>
@@ -98,7 +76,6 @@ export const Settings = ({ currentUser }) => {
               </section>
             </>
           )}
-        </div>
       </div>
     </div>
   );
