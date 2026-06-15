@@ -99,11 +99,13 @@ h1, h2, h3, h4 {
 }
 
 .alert-danger {
-  @apply text-danger border-danger/30 bg-danger-muted;
+  @apply alert text-danger bg-danger-muted;
+  border-color: color-mix(in srgb, var(--color-danger) 30%, transparent);
 }
 
 .alert-success {
-  @apply text-success border-success/30 bg-success-muted;
+  @apply alert text-success bg-success-muted;
+  border-color: color-mix(in srgb, var(--color-success) 30%, transparent);
 }
 
 .accent-gradient {
