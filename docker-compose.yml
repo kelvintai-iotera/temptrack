@@ -47,8 +47,8 @@ services:
         args:
           GIT_COMMIT: ${GIT_COMMIT:-unknown}
       volumes:
-      - app-uploads:/app/uploads
-    env_file: ./.env
+        - app-uploads:/app/uploads
+      env_file: ./.env
       environment:
         - TZ=Asia/Hong_Kong
         - PORT=${NODE_DOCKER_PORT:-3011}

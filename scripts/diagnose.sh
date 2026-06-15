@@ -14,15 +14,24 @@ echo "=== git HEAD ==="
 git log -1 --oneline 2>/dev/null || echo "(not a git repo)"
 echo ""
 
-echo "=== frontend bundle (History page) ==="
+echo "=== frontend bundle ==="
 if docker compose ps --status running app 2>/dev/null | grep -q app; then
   BUILD_VER=$(docker compose exec -T app cat /app/public/build-version.txt 2>/dev/null | tr -d '\r\n' || true)
   if [ -n "$BUILD_VER" ]; then
     echo "  build-version.txt: $BUILD_VER"
+    if [ -f .git/HEAD ] && command -v git >/dev/null 2>&1; then
+      LOCAL_HEAD=$(git rev-parse --short HEAD 2>/dev/null || true)
+      if [ -n "$LOCAL_HEAD" ] && [ "$BUILD_VER" != "$LOCAL_HEAD" ]; then
+        echo "  ⚠️  Container build ($BUILD_VER) ≠ git HEAD ($LOCAL_HEAD) — rebuild required"
+      fi
+    fi
   fi
-  if docker compose exec -T app sh -c 'find /app/public/assets -name "*.js" -exec grep -l "history/query" {} + 2>/dev/null | head -1' | grep -q .; then
-    echo "  OK — History query UI is in the deployed frontend"
-  elif docker compose exec -T app sh -c 'find /app/public/assets -name "*.js" -exec grep -l "coming soon" {} + 2>/dev/null | head -1' | grep -q .; then
+  HAS_HISTORY=$(docker compose exec -T app sh -c 'find /app/public/assets -name "*.js" -exec grep -l "history/query" {} + 2>/dev/null | head -1' || true)
+  HAS_FLOOR=$(docker compose exec -T app sh -c 'find /app/public/assets -name "*.js" -exec grep -l "floor-plan" {} + 2>/dev/null | head -1' || true)
+  HAS_OLD=$(docker compose exec -T app sh -c 'find /app/public/assets -name "*.js" -exec grep -l "coming soon" {} + 2>/dev/null | head -1' || true)
+  if [ -n "$HAS_HISTORY" ] && [ -n "$HAS_FLOOR" ]; then
+    echo "  OK — History + Floor Plan UI in deployed frontend"
+  elif [ -n "$HAS_OLD" ]; then
     echo "  ⚠️  OLD frontend (History placeholder) — rebuild required:"
     echo "     docker compose build --no-cache app && docker compose up -d --force-recreate"
   else

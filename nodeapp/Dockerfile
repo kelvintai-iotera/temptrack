@@ -9,7 +9,8 @@ RUN mkdir -p /build/public \
     && VITE_BUILD_OUT_DIR=/build/public npm run build \
     && printf '%s\n' "$GIT_COMMIT" > /build/public/build-version.txt \
     && grep -rq 'history/query' /build/public/assets/ \
-    || (echo "ERROR: frontend build missing History page — run: docker compose build --no-cache app" && exit 1)
+    && grep -rq 'floor-plan' /build/public/assets/ \
+    || (echo "ERROR: frontend build missing History or Floor Plan — run: docker compose build --no-cache app" && exit 1)
 
 # Stage 2 — backend dependencies
 FROM node:18-bullseye-slim AS app-deps
