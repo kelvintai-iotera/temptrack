@@ -16,12 +16,18 @@ echo ""
 
 echo "=== frontend bundle (History page) ==="
 if docker compose ps --status running app 2>/dev/null | grep -q app; then
-  if docker compose exec -T app sh -c 'grep -rl "History Query" /app/public/assets/*.js 2>/dev/null | head -1' | grep -q .; then
+  BUILD_VER=$(docker compose exec -T app cat /app/public/build-version.txt 2>/dev/null | tr -d '\r\n' || true)
+  if [ -n "$BUILD_VER" ]; then
+    echo "  build-version.txt: $BUILD_VER"
+  fi
+  if docker compose exec -T app sh -c 'find /app/public/assets -name "*.js" -exec grep -l "history/query" {} + 2>/dev/null | head -1' | grep -q .; then
     echo "  OK — History query UI is in the deployed frontend"
+  elif docker compose exec -T app sh -c 'find /app/public/assets -name "*.js" -exec grep -l "coming soon" {} + 2>/dev/null | head -1' | grep -q .; then
+    echo "  ⚠️  OLD frontend (History placeholder) — rebuild required:"
+    echo "     docker compose build --no-cache app && docker compose up -d --force-recreate"
   else
-    echo "  ⚠️  OLD frontend — History page not deployed. Run:"
-    echo "     git fetch origin && git reset --hard origin/main"
-    echo "     docker compose build --no-cache app && docker compose up -d"
+    echo "  ⚠️  Could not verify frontend bundle. Inspect manually:"
+    echo "     docker compose exec app ls -la /app/public/assets/"
   fi
 else
   echo "  (app container not running — skip)"

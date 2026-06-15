@@ -1,5 +1,6 @@
 import { loggerFactory } from '../../config/logger.js';
 import { normalizeMac } from './mac-utils.js';
+import { TEMP_UNKNOWN } from './sensor-values.js';
 import pkg from '@prisma/client'
 
 const prisma = new pkg.PrismaClient()
@@ -7,29 +8,30 @@ const prisma = new pkg.PrismaClient()
 const logger = loggerFactory("beaconDataStore")
 
 class BeaconDataStore {
+    _beaconWriteFields(beacon) {
+        return {
+            name: beacon.name,
+            nickname: beacon.nickname,
+            temp: beacon.temp ?? TEMP_UNKNOWN,
+            battery: beacon.battery ?? 0,
+            rssi: beacon.rssi ?? 0,
+            status: beacon.status,
+            report_at: beacon.report_at,
+        }
+    }
+
     async updateBeacon(beacon){
         try {
+            const fields = this._beaconWriteFields(beacon)
             const result = await prisma.beacon.upsert({
                 where: { mac_addr: beacon.mac_addr },
                 update: {
-                    name: beacon.name,
-                    nickname: beacon.nickname,
-                    temp: beacon.temp,
-                    battery: beacon.battery,
-                    rssi: beacon.rssi,
-                    status: beacon.status,
-                    report_at: beacon.report_at,
+                    ...fields,
                     gateway_id: beacon.gateway_id,
                 },
                 create: {
-                    name: beacon.name,
-                    nickname: beacon.nickname,
+                    ...fields,
                     mac_addr: beacon.mac_addr,
-                    temp: beacon.temp,
-                    battery: beacon.battery,
-                    rssi: beacon.rssi,
-                    status: beacon.status,
-                    report_at: beacon.report_at,
                     gateway: {
                         connect: {
                             id: beacon.gateway.id

@@ -92,8 +92,10 @@ docker compose -f "$APP_DIR/docker-compose.yml" down
 
 # 5. Build and Start
 echo "🏗️  Building and starting containers..."
-# First deploy after package.json changes: set FORCE_FRONTEND_BUILD=1
-docker compose -f "$APP_DIR/docker-compose.yml" up --build -d
+export GIT_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || echo unknown)"
+echo "   GIT_COMMIT=$GIT_COMMIT"
+docker compose -f "$APP_DIR/docker-compose.yml" build --no-cache app
+docker compose -f "$APP_DIR/docker-compose.yml" up -d --force-recreate app
 
 # 6. Status check
 echo "📊 Deployment complete! Current status:"

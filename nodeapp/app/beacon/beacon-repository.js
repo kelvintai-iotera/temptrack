@@ -1,6 +1,7 @@
 import { loggerFactory } from '../../config/logger.js';
 import { BEACON_STATUS } from './beacon-status.js';
 import { normalizeMac } from './mac-utils.js';
+import { TEMP_UNKNOWN } from './sensor-values.js';
 
 const logger = loggerFactory('beacon-service')
 
@@ -48,6 +49,8 @@ class BeaconRepository {
             nickname: "?",
             mac_addr: normalizeMac(mac_addr),
             report_at: new Date().toISOString(),
+            temp: TEMP_UNKNOWN,
+            battery: 0,
             rssi: 0,
             status: BEACON_STATUS.IN
         }
@@ -149,9 +152,9 @@ class BeaconRepository {
             nickname: beacon.nickname,
             beacon_mac_addr: beacon.mac_addr,
             report_at: beacon.report_at,
-            temp: beacon.temp,
-            battery: beacon.battery,
-            rssi: beacon.rssi,
+            temp: beacon.temp ?? TEMP_UNKNOWN,
+            battery: beacon.battery ?? 0,
+            rssi: beacon.rssi ?? 0,
             status: beacon.status,
             gateway_mac_addr: beacon.gateway.mac_addr,
             gateway_name: beacon.gateway.name

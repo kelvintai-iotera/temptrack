@@ -78,9 +78,13 @@ class MqttProcessor{
                 !isPlausibleSensorTemp(beacon.temp)
             ) {
                 beacon.temp = TEMP_UNKNOWN
+            } else if (beacon.temp == null) {
+                beacon.temp = TEMP_UNKNOWN
             }
             if (parsed.battery != null) {
                 beacon.battery = parsed.battery
+            } else if (beacon.battery == null) {
+                beacon.battery = 0
             }
             if (rssi != null) {
                 beacon.rssi = rssi

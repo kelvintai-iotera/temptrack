@@ -6,8 +6,13 @@ RUN npm install
 
 # Stage 2 — frontend production build (baked into image)
 FROM frontend-deps AS frontend-build
+ARG GIT_COMMIT=unknown
 COPY frontend/ ./
-RUN mkdir -p /build/public && VITE_BUILD_OUT_DIR=/build/public npm run build
+RUN mkdir -p /build/public \
+    && VITE_BUILD_OUT_DIR=/build/public npm run build \
+    && printf '%s\n' "$GIT_COMMIT" > /build/public/build-version.txt \
+    && grep -rq 'history/query' /build/public/assets/ \
+    || (echo "ERROR: frontend build missing History page — run: docker compose build --no-cache app" && exit 1)
 
 # Stage 3 — backend dependencies
 FROM node:18-bullseye-slim AS app-deps
