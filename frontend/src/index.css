@@ -91,6 +91,34 @@ h1, h2, h3, h4 {
   color: var(--color-muted);
 }
 
+.login-input-group {
+  @apply flex items-center gap-3 w-full rounded-xl border px-4 py-3 transition-all;
+  background-color: var(--color-input-bg);
+  border-color: var(--color-border);
+}
+
+.login-input-group:focus-within {
+  @apply ring-1 ring-accent-cyan/50 border-accent-cyan/50;
+}
+
+.login-input-icon {
+  @apply shrink-0 w-5 h-5 text-muted pointer-events-none;
+}
+
+.login-input {
+  @apply flex-1 min-w-0 bg-transparent border-0 p-0 text-base;
+  color: var(--color-text);
+}
+
+.login-input::placeholder {
+  color: var(--color-muted);
+}
+
+.login-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
