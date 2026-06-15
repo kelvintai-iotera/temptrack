@@ -15,7 +15,7 @@ import { countTempAlerts } from './utils/tempAlerts';
 import { useBeacons } from './hooks/useBeacons';
 import {
   LayoutDashboard,
-  History,
+  History as HistoryIcon,
   Settings as SettingsIcon,
   Bell,
   LogOut,
@@ -212,7 +212,7 @@ function SidebarNav({ activeTab, navigate, onLogout, user }) {
           onClick={() => navigate('/real-time')}
         />
         <NavItem
-          icon={<History size={20} />}
+          icon={<HistoryIcon size={20} />}
           label="History"
           active={activeTab === 'history'}
           onClick={() => navigate('/history')}
