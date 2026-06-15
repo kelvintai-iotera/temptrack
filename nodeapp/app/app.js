@@ -42,6 +42,8 @@ function initApp() {
         },
         crossOriginResourcePolicy: { policy: 'cross-origin' },
     }));
+    // Floor plan uploads are base64 JSON payloads — parse before the global 256kb limit.
+    app.use('/floor-plan/upload', express.json({ limit: '12mb' }));
     app.use(express.json({ limit: '256kb' }));
     app.use(express.urlencoded({ extended: false, limit: '256kb' }));
     app.use(cookieParser());

@@ -32,7 +32,7 @@ async function readMeta() {
 }
 
 function parseDataUrl(dataUrl) {
-  const match = String(dataUrl || '').match(/^data:(image\/[a-z+]+);base64,([A-Za-z0-9+/=]+)$/i);
+  const match = String(dataUrl || '').match(/^data:(image\/[a-z+]+)(?:;[^,]*)?;base64,([A-Za-z0-9+/=]+)$/i);
   if (!match) {
     throw new Error('Invalid image upload. Use PNG, JPEG, or WebP.');
   }

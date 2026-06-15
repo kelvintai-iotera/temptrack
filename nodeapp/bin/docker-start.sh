@@ -73,6 +73,11 @@ if [ "$MIGRATE_OK" != "1" ]; then
   exit 1
 fi
 
+echo "[docker-start] Generating Prisma client..."
+npx prisma generate
+
+mkdir -p /app/uploads/floor-plan
+
 echo "[docker-start] Seeding database (admin user, params, sample data)..."
 if ! npx prisma db seed; then
   echo "[docker-start] WARN: prisma db seed failed (may be OK if already seeded)"

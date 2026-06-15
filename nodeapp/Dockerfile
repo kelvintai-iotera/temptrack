@@ -29,6 +29,8 @@ COPY --from=app-deps /app/node_modules ./node_modules
 COPY nodeapp/ ./
 COPY --from=frontend-build /build/public ./public
 
+RUN npx prisma generate
+
 RUN chmod +x bin/docker-start.sh bin/ensure-runtime-env.sh 2>/dev/null || true
 
 EXPOSE 3011

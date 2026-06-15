@@ -1,10 +1,10 @@
 import express from 'express';
+import path from 'path';
 import { loggerFactory } from '../../config/logger.js';
 import { authMiddleware, adminMiddleware } from '../auth/auth-middleware.js';
 import { FloorPlanService } from './floor-plan-service.js';
 
 const logger = loggerFactory('floor-plan-router');
-const jsonLarge = express.json({ limit: '12mb' });
 
 function addFloorPlanRouter() {
   const router = express.Router();
@@ -15,7 +15,10 @@ function addFloorPlanRouter() {
       res.json(await service.getState());
     } catch (e) {
       logger.error(e);
-      res.status(500).json({ error: 'Failed to load floor plan' });
+      const hint = e?.code === 'P2022' || /plan_[xy]/i.test(String(e?.message))
+        ? 'Database schema may be out of date — restart the app container after deploy.'
+        : 'Failed to load floor plan';
+      res.status(500).json({ error: hint });
     }
   });
 
@@ -27,14 +30,14 @@ function addFloorPlanRouter() {
       }
       const state = await service.getState();
       res.type(state.mimeType || 'image/png');
-      return res.sendFile(imagePath);
+      return res.sendFile(path.resolve(imagePath));
     } catch (e) {
       logger.error(e);
       return res.status(500).json({ error: 'Failed to load floor plan image' });
     }
   });
 
-  router.post('/upload', authMiddleware, adminMiddleware, jsonLarge, async (req, res) => {
+  router.post('/upload', authMiddleware, adminMiddleware, async (req, res) => {
     try {
       const meta = await service.saveImage({
         dataUrl: req.body?.dataUrl,
