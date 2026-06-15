@@ -128,6 +128,5 @@ export function normalizeFiltersForApi(filters) {
 }
 
 export const DEFAULT_SQL = `SELECT * FROM history
-WHERE report_at >= '2026-01-01'
 ORDER BY report_at DESC
 LIMIT 300`;

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from '../api/axiosSetup';
 import { Button } from './ui/Button';
 import { Download, Play, Plus, Trash2, Database, Code2 } from 'lucide-react';
@@ -139,6 +139,37 @@ export const History = () => {
     }
     return fetchQuery();
   }, [mode, fetchQuery]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await axios.post('/history/query', {
+          filters: [],
+          orderBy: 'report_at',
+          orderDir: 'desc',
+          limit: PAGE_SIZE,
+          offset: 0,
+        });
+        if (!cancelled) {
+          setRows(res.data.items || []);
+          setTotal(res.data.total ?? 0);
+          setOffset(0);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setRows([]);
+          setTotal(0);
+          setError(err.response?.data?.error || err.message || 'Query failed');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const exportCsv = useCallback(async () => {
     setExporting(true);
@@ -313,9 +344,19 @@ export const History = () => {
         </div>
 
         {rows.length === 0 ? (
-          <p className="text-sm text-muted py-8 text-center">
-            {loading ? 'Loading…' : 'Run a query to see history records.'}
-          </p>
+          <div className="text-sm text-muted py-8 text-center space-y-2">
+            {loading ? (
+              <p>Loading…</p>
+            ) : (
+              <>
+                <p>No history records match this query.</p>
+                <p className="text-xs max-w-md mx-auto">
+                  History is recorded periodically from live beacon readings (about once per minute when data changes).
+                  If beacons are online and reporting, new rows will appear here automatically.
+                </p>
+              </>
+            )}
+          </div>
         ) : (
           <div className="overflow-x-auto -mx-2 md:mx-0">
             <table className="w-full min-w-[960px] text-sm">

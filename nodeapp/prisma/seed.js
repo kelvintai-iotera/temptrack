@@ -133,6 +133,7 @@ async function main() {
   console.log({ gateway1, gateway2 })
   newBeacon()
   param()
+  await seedSampleHistory()
 }
 
 const NAMED_BEACONS = [
@@ -166,6 +167,46 @@ async function newBeacon() {
     results.push(await upsertNamedBeacon(beacon))
   }
   console.log({ beacons: results.map((b) => ({ mac: b.mac_addr, nickname: b.nickname })) })
+}
+
+async function seedSampleHistory() {
+  const existing = await prisma.beacon_history.count()
+  if (existing > 0) {
+    console.log(`History already has ${existing} rows, skipping sample seed`)
+    return
+  }
+
+  const gateways = await prisma.gateway.findMany()
+  const gwById = Object.fromEntries(gateways.map((g) => [g.id, g]))
+  const now = Date.now()
+  const rows = []
+
+  for (const beacon of NAMED_BEACONS) {
+    const gateway = gwById[beacon.gateway_id]
+    if (!gateway) continue
+
+    for (let i = 0; i < 12; i += 1) {
+      const reportAt = new Date(now - i * 15 * 60 * 1000)
+      const tempTenths = 220 + (i % 5) * 8 + (beacon.id === 'B4' ? 80 : 0)
+      rows.push({
+        beacon_mac_addr: beacon.mac,
+        name: beacon.nickname,
+        nickname: beacon.nickname,
+        report_at: reportAt,
+        gateway_mac_addr: gateway.mac_addr,
+        gateway_name: gateway.name,
+        temp: tempTenths,
+        battery: Math.max(40, 95 - i * 3),
+        rssi: -55 - (i % 4) * 3,
+        status: i > 8 ? 'out' : 'in',
+      })
+    }
+  }
+
+  if (rows.length > 0) {
+    await prisma.beacon_history.createMany({ data: rows })
+    console.log(`Seeded ${rows.length} sample history rows`)
+  }
 }
 
 async function param() {

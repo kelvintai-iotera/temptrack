@@ -14,6 +14,20 @@ echo "=== git HEAD ==="
 git log -1 --oneline 2>/dev/null || echo "(not a git repo)"
 echo ""
 
+echo "=== frontend bundle (History page) ==="
+if docker compose ps --status running app 2>/dev/null | grep -q app; then
+  if docker compose exec -T app sh -c 'grep -rl "History Query" /app/public/assets/*.js 2>/dev/null | head -1' | grep -q .; then
+    echo "  OK — History query UI is in the deployed frontend"
+  else
+    echo "  ⚠️  OLD frontend — History page not deployed. Run:"
+    echo "     git fetch origin && git reset --hard origin/main"
+    echo "     docker compose build --no-cache app && docker compose up -d"
+  fi
+else
+  echo "  (app container not running — skip)"
+fi
+echo ""
+
 echo "=== docker compose ps ==="
 docker compose ps
 echo ""
