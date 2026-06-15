@@ -24,7 +24,7 @@ import {
   X,
   ChevronDown,
 } from 'lucide-react';
-import { getSettingsSections, scrollToSettingsSection } from './utils/settingsNav';
+import { getSettingsSections, getSettingsPageTitle, getSettingsSubPath, settingsSectionPath, SETTINGS_DEFAULT_PATH } from './utils/settingsNav';
 
 const TAB_TITLE_MAP = {
   dashboard: 'Dashboard',
@@ -103,13 +103,16 @@ function AppContent() {
 
   const path = location.pathname.replace(/^\//, '');
   const activeTab = path === '' ? 'dashboard' : path.split('/')[0];
-  const activeTitle = TAB_TITLE_MAP[activeTab] || 'Page Not Found';
+  const isAdmin = user?.role === 'admin';
+  const activeTitle = activeTab === 'settings'
+    ? getSettingsPageTitle(location.pathname, isAdmin)
+    : (TAB_TITLE_MAP[activeTab] || 'Page Not Found');
 
   return (
     <SettingsProvider>
       <BeaconProvider>
         <div className="min-h-screen flex flex-col md:flex-row bg-background text-foreground">
-          <aside className="hidden md:flex w-64 shrink-0 border-r border-border flex-col p-6 gap-8 bg-card">
+          <aside className="hidden md:flex w-64 shrink-0 border-r border-border flex-col h-screen sticky top-0 bg-card overflow-hidden p-6">
             <SidebarNav
               activeTab={activeTab}
               location={location}
@@ -128,8 +131,8 @@ function AppContent() {
                 aria-label="Close menu"
                 onClick={() => setMobileNavOpen(false)}
               />
-              <aside className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] border-r border-border flex flex-col p-6 gap-8 bg-card md:hidden shadow-xl">
-                <div className="flex items-center justify-between">
+              <aside className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] border-r border-border flex flex-col bg-card md:hidden shadow-xl overflow-hidden">
+                <div className="shrink-0 flex items-center justify-between p-6 pb-4">
                   <BrandMark />
                   <button
                     type="button"
@@ -140,6 +143,7 @@ function AppContent() {
                     <X size={22} />
                   </button>
                 </div>
+                <div className="flex-1 min-h-0 px-6 pb-6">
                 <SidebarNav
                   activeTab={activeTab}
                   location={location}
@@ -148,6 +152,7 @@ function AppContent() {
                   onCloseMobile={() => setMobileNavOpen(false)}
                   user={user}
                 />
+                </div>
               </aside>
             </>
           )}
@@ -178,7 +183,7 @@ function AppContent() {
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/real-time" element={<RealTimeStatus currentUser={user} />} />
-                <Route path="/settings" element={<Settings currentUser={user} />} />
+                <Route path="/settings/*" element={<Settings currentUser={user} />} />
                 <Route path="/history" element={<History />} />
                 <Route path="/alerts" element={<Alerts currentUser={user} />} />
                 <Route path="*" element={<NotFoundView />} />
@@ -200,6 +205,7 @@ function SidebarNav({ activeTab, location, navigate, onLogout, onCloseMobile, us
   const isAdmin = user?.role === 'admin';
   const settingsSections = getSettingsSections(isAdmin);
   const [settingsOpen, setSettingsOpen] = useState(activeTab === 'settings');
+  const settingsSubPath = getSettingsSubPath(location.pathname);
 
   useEffect(() => {
     if (activeTab === 'settings') {
@@ -209,38 +215,28 @@ function SidebarNav({ activeTab, location, navigate, onLogout, onCloseMobile, us
     }
   }, [activeTab]);
 
-  useEffect(() => {
-    if (activeTab !== 'settings' || !location.hash) return;
-    const sectionId = location.hash.replace('#', '');
-    const timer = setTimeout(() => scrollToSettingsSection(sectionId), 50);
-    return () => clearTimeout(timer);
-  }, [activeTab, location.hash]);
-
-  const activeSectionId = location.hash.replace('#', '');
-
   const handleSettingsToggle = () => {
     if (activeTab === 'settings') {
       setSettingsOpen((open) => !open);
       return;
     }
-    navigate('/settings');
+    navigate(settingsSectionPath(SETTINGS_DEFAULT_PATH));
     setSettingsOpen(true);
   };
 
-  const handleSettingsSection = (sectionId) => {
-    navigate(`/settings#${sectionId}`);
+  const handleSettingsSection = (path) => {
+    navigate(settingsSectionPath(path));
     setSettingsOpen(true);
     onCloseMobile?.();
-    setTimeout(() => scrollToSettingsSection(sectionId), 50);
   };
 
   return (
-    <>
-      <div className="hidden md:block">
+    <div className="flex flex-col h-full min-h-0 gap-4">
+      <div className="shrink-0 hidden md:block">
         <BrandMark />
       </div>
 
-      <nav className="flex flex-col gap-2 flex-1" aria-label="Main navigation">
+      <nav className="flex flex-col gap-2 flex-1 min-h-0 overflow-y-auto pr-1" aria-label="Main navigation">
         <NavItem
           icon={<LayoutDashboard size={20} />}
           label="Dashboard"
@@ -288,14 +284,18 @@ function SidebarNav({ activeTab, location, navigate, onLogout, onCloseMobile, us
           </button>
 
           {settingsOpen && (
-            <div className="mt-1 ml-3 pl-3 border-l border-border flex flex-col gap-0.5" role="group" aria-label="Settings sections">
+            <div
+              className="mt-1 ml-3 pl-3 border-l border-border flex flex-col gap-0.5 max-h-44 overflow-y-auto"
+              role="group"
+              aria-label="Settings sections"
+            >
               {settingsSections.map((item) => {
-                const isActive = activeTab === 'settings' && activeSectionId === item.id;
+                const isActive = activeTab === 'settings' && settingsSubPath === item.path;
                 return (
                   <button
-                    key={item.id}
+                    key={item.path}
                     type="button"
-                    onClick={() => handleSettingsSection(item.id)}
+                    onClick={() => handleSettingsSection(item.path)}
                     aria-current={isActive ? 'true' : undefined}
                     className={`text-left px-3 py-2 rounded-lg text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan/50 ${
                       isActive
@@ -312,7 +312,7 @@ function SidebarNav({ activeTab, location, navigate, onLogout, onCloseMobile, us
         </div>
       </nav>
 
-      <div className="flex flex-col gap-4">
+      <div className="shrink-0 flex flex-col gap-4 pt-4 border-t border-border">
         <button
           type="button"
           onClick={onLogout}
@@ -329,7 +329,7 @@ function SidebarNav({ activeTab, location, navigate, onLogout, onCloseMobile, us
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -342,7 +342,7 @@ function MobileBottomNav({ activeTab, navigate }) {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/' },
     { id: 'real-time', label: 'Live', icon: Radio, path: '/real-time' },
     { id: 'alerts', label: 'Alerts', icon: Bell, path: '/alerts', badge: tempAlertCount },
-    { id: 'settings', label: 'Settings', icon: SettingsIcon, path: '/settings' },
+    { id: 'settings', label: 'Settings', icon: SettingsIcon, path: '/settings/appearance' },
   ];
 
   return (

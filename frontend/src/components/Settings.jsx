@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useId } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import axios from '../api/axiosSetup';
 import { useSettings } from '../context/SettingsContext';
 import { Button } from './ui/Button';
@@ -25,7 +25,6 @@ import {
   Palette,
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
-import { scrollToSettingsSection } from '../utils/settingsNav';
 
 const PARAM_FIELDS = [
   { key: 'BEACON_OUT_TIME', label: 'Beacon offline timeout (seconds)', type: 'number', min: 5, max: 3600 },
@@ -35,49 +34,86 @@ const PARAM_FIELDS = [
   { key: 'TEMP_CRITICAL_C', label: 'Temperature critical (°C)', type: 'number', step: '0.1' },
 ];
 
+function SettingsShell({ children }) {
+  return (
+    <div className="p-4 md:p-8 max-w-4xl mx-auto">
+      {children}
+    </div>
+  );
+}
+
+function AdminSettingsRoute({ isAdmin, children }) {
+  if (!isAdmin) {
+    return <Navigate to="/settings/appearance" replace />;
+  }
+  return children;
+}
+
 export const Settings = ({ currentUser }) => {
   const isAdmin = currentUser?.role === 'admin';
   const { refreshConfig } = useSettings();
-  const location = useLocation();
-
-  useEffect(() => {
-    const sectionId = location.hash.replace('#', '');
-    if (!sectionId) return;
-    const timer = setTimeout(() => scrollToSettingsSection(sectionId), 100);
-    return () => clearTimeout(timer);
-  }, [location.hash]);
 
   return (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto">
-      <p className="text-sm text-muted mb-6">Account security and system configuration.</p>
-
-      <div className="flex flex-col gap-8 min-w-0">
-          <section id="settings-appearance" className="scroll-mt-20">
+    <Routes>
+      <Route index element={<Navigate to="appearance" replace />} />
+      <Route
+        path="appearance"
+        element={(
+          <SettingsShell>
             <AppearanceSection />
-          </section>
-
-          <section id="settings-password" className="scroll-mt-20">
+          </SettingsShell>
+        )}
+      />
+      <Route
+        path="password"
+        element={(
+          <SettingsShell>
             <ChangePasswordSection />
-          </section>
-
-          {isAdmin && (
-            <>
-              <section id="settings-status" className="scroll-mt-20">
-                <SystemStatusSection />
-              </section>
-              <section id="settings-gateway" className="scroll-mt-20">
-                <GatewayManagementSection />
-              </section>
-              <section id="settings-params" className="scroll-mt-20">
-                <SystemParamsSection onSaved={refreshConfig} />
-              </section>
-              <section id="settings-users" className="scroll-mt-20">
-                <UserManagementSection currentUser={currentUser} />
-              </section>
-            </>
-          )}
-      </div>
-    </div>
+          </SettingsShell>
+        )}
+      />
+      <Route
+        path="status"
+        element={(
+          <AdminSettingsRoute isAdmin={isAdmin}>
+            <SettingsShell>
+              <SystemStatusSection />
+            </SettingsShell>
+          </AdminSettingsRoute>
+        )}
+      />
+      <Route
+        path="gateways"
+        element={(
+          <AdminSettingsRoute isAdmin={isAdmin}>
+            <SettingsShell>
+              <GatewayManagementSection />
+            </SettingsShell>
+          </AdminSettingsRoute>
+        )}
+      />
+      <Route
+        path="params"
+        element={(
+          <AdminSettingsRoute isAdmin={isAdmin}>
+            <SettingsShell>
+              <SystemParamsSection onSaved={refreshConfig} />
+            </SettingsShell>
+          </AdminSettingsRoute>
+        )}
+      />
+      <Route
+        path="users"
+        element={(
+          <AdminSettingsRoute isAdmin={isAdmin}>
+            <SettingsShell>
+              <UserManagementSection currentUser={currentUser} />
+            </SettingsShell>
+          </AdminSettingsRoute>
+        )}
+      />
+      <Route path="*" element={<Navigate to="appearance" replace />} />
+    </Routes>
   );
 };
 
