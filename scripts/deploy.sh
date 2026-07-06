@@ -78,6 +78,7 @@ chmod +x "$APP_DIR/scripts/repair-env.sh" 2>/dev/null || true
 chmod +x "$APP_DIR/nodeapp/bin/docker-start.sh" 2>/dev/null || true
 chmod +x "$APP_DIR/nodeapp/bin/ensure-runtime-env.sh" 2>/dev/null || true
 chmod +x "$APP_DIR/scripts/diagnose.sh" 2>/dev/null || true
+chmod +x "$APP_DIR/scripts/server-update.sh" 2>/dev/null || true
 chmod +x "$APP_DIR/scripts/fix-permissions.sh" 2>/dev/null || true
 
 # Mosquitto data/log must be writable by UID 1883 inside the container

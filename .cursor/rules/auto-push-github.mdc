@@ -10,7 +10,29 @@ After completing any code or config change in this repo:
 1. Stage relevant files (`git add`).
 2. Create a concise commit message describing the **why**.
 3. Push to `origin main` (`git push origin main`).
-4. Tell the user the commit hash and that changes are on GitHub.
+4. Tell the user:
+   - The commit hash and that changes are on GitHub.
+   - **Ubuntu server update commands** (copy-paste block below).
+
+## Ubuntu server update (always include after push)
+
+```bash
+cd ~/eLogbook
+bash scripts/server-update.sh
+```
+
+Or step by step:
+
+```bash
+cd ~/eLogbook
+git fetch origin && git reset --hard origin/main
+export GIT_COMMIT=$(git rev-parse --short HEAD)
+docker compose build --no-cache app
+docker compose up -d --force-recreate
+bash scripts/diagnose.sh
+```
+
+Access: **https://10.0.56.200:3011** · Gateway MQTT: **10.0.56.200:1883**
 
 Do **not** skip push unless:
 - The user explicitly says not to commit/push in that message.

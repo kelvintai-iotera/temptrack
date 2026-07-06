@@ -19,6 +19,13 @@ Login: `admin` / `admin123` — change in production.
 
 Troubleshoot: `bash scripts/diagnose.sh`
 
+**Ubuntu server** (after each GitHub update):
+
+```bash
+cd ~/eLogbook
+bash scripts/server-update.sh
+```
+
 ## Environment files
 
 | File | Purpose |
