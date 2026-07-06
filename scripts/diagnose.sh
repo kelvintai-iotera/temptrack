@@ -68,6 +68,14 @@ fi
 
 echo "=== mqtt-broker logs (last 15) ==="
 docker compose logs mqtt-broker --tail 15 2>/dev/null || true
+MQTT_STATUS=$(docker compose ps --format '{{.Status}}' mqtt-broker 2>/dev/null | head -1)
+if echo "$MQTT_STATUS" | grep -qi restarting; then
+  echo ""
+  echo "⚠️  mqtt-broker is crash-looping (often exit 13 = permission denied on passwd/data/log)."
+  echo "    bash scripts/fix-permissions.sh"
+  echo "    docker compose restart mqtt-broker app"
+  echo "    Or: sudo chown 1883:1883 mosquitto/config/passwd && docker compose restart mqtt-broker"
+fi
 echo ""
 
 echo "=== postgresql-db logs (last 10) ==="

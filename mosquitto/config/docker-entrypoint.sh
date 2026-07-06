@@ -19,6 +19,9 @@ else
   mosquitto_passwd -b -c "$PASSWD_FILE" "$MQTT_USER" "$MQTT_PASSWORD"
 fi
 
-chmod 600 "$PASSWD_FILE" 2>/dev/null || true
+chown "$MOSQUITTO_UID:$MOSQUITTO_GID" "$PASSWD_FILE" 2>/dev/null \
+  || chmod 644 "$PASSWD_FILE" 2>/dev/null \
+  || true
+chmod 640 "$PASSWD_FILE" 2>/dev/null || true
 
 exec /docker-entrypoint.sh /usr/sbin/mosquitto -c /mosquitto/config/mosquitto.conf

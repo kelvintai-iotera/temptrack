@@ -23,6 +23,24 @@ fix_owner "$APP_DIR/nodeapp/public"
 fix_owner "$APP_DIR/nodeapp/node_modules"
 fix_owner "$APP_DIR/frontend/node_modules"
 
+# Mosquitto runs as UID 1883 — passwd/data/log must be readable/writable
+if [ -d "$APP_DIR/mosquitto" ]; then
+  mkdir -p "$APP_DIR/mosquitto/data" "$APP_DIR/mosquitto/log"
+  if sudo chown -R 1883:1883 "$APP_DIR/mosquitto/data" "$APP_DIR/mosquitto/log" 2>/dev/null; then
+    echo "  chown mosquitto data/log to 1883:1883"
+  else
+    chmod -R 777 "$APP_DIR/mosquitto/data" "$APP_DIR/mosquitto/log" 2>/dev/null || true
+    echo "  chmod 777 mosquitto data/log (fallback)"
+  fi
+  if [ -f "$APP_DIR/mosquitto/config/passwd" ]; then
+    sudo chown 1883:1883 "$APP_DIR/mosquitto/config/passwd" 2>/dev/null \
+      || chown 1883:1883 "$APP_DIR/mosquitto/config/passwd" 2>/dev/null \
+      || chmod 644 "$APP_DIR/mosquitto/config/passwd" 2>/dev/null \
+      || true
+    echo "  fixed mosquitto config/passwd ownership"
+  fi
+fi
+
 if [ -d "$APP_DIR/nodeapp/public" ]; then
   echo "  removing nodeapp/public (rebuilt inside Docker image)"
   rm -rf "$APP_DIR/nodeapp/public" 2>/dev/null || sudo rm -rf "$APP_DIR/nodeapp/public"
