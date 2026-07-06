@@ -264,7 +264,7 @@ function statusTone(status) {
   if (status === 'ok' || status === 'connected') {
     return 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-500/10 border-green-300 dark:border-green-500/20';
   }
-  if (status === 'reconnecting' || status === 'offline') {
+  if (status === 'warn' || status === 'reconnecting' || status === 'offline') {
     return 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/10 border-orange-300 dark:border-orange-500/20';
   }
   return 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/20';
