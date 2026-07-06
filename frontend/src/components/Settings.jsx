@@ -302,6 +302,14 @@ function SystemStatusSection() {
             System Status
           </h3>
           <p className="text-sm text-muted mt-1">MQTT, database, and runtime health.</p>
+          {status?.public?.web_url && (
+            <p className="text-xs text-muted mt-2">
+              Web: <span className="font-mono">{status.public.web_url}</span>
+              {status.public.mqtt_url && (
+                <> · Gateway MQTT: <span className="font-mono">{status.public.mqtt_url}</span></>
+              )}
+            </p>
+          )}
         </div>
         <button
           type="button"
@@ -396,6 +404,7 @@ function StatusCard({ label, value, subValue, tone }) {
 
 function GatewayManagementSection() {
   const [gateways, setGateways] = useState([]);
+  const [mqttBrokerHint, setMqttBrokerHint] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -423,6 +432,9 @@ function GatewayManagementSection() {
 
   useEffect(() => {
     fetchGateways();
+    axios.get('/settings/status')
+      .then((res) => setMqttBrokerHint(res.data?.public?.mqtt_url || ''))
+      .catch(() => {});
   }, []);
 
   const handleCreate = async (e) => {
@@ -497,6 +509,11 @@ function GatewayManagementSection() {
           Gateway Management
         </h3>
         <p className="text-sm text-muted mt-1">Manage MQTT gateway locations and check points.</p>
+        {mqttBrokerHint && (
+          <p className="text-xs text-muted mt-2">
+            Physical gateway MQTT broker: <span className="font-mono text-foreground">{mqttBrokerHint}</span> (no username/password)
+          </p>
+        )}
       </div>
 
       {message && (

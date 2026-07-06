@@ -20,7 +20,7 @@ git fetch origin && git reset --hard origin/main
 docker compose up -d --build
 ```
 
-瀏覽器 **Ctrl+F5** 開 https://\<server-ip\>:3011
+瀏覽器 **Ctrl+F5** 開 https://10.0.56.200:3011
 
 ---
 
@@ -225,7 +225,7 @@ bash scripts/diagnose.sh
 docker compose logs app --tail 30
 ```
 
-瀏覽器：**https://10.0.56.130:3011**
+瀏覽器：**https://10.0.56.200:3011**
 
 ---
 
@@ -250,7 +250,7 @@ docker compose up -d --build
 bash scripts/diagnose.sh
 ```
 
-瀏覽器：**https://10.0.56.130:3011**（接受自簽憑證警告）
+瀏覽器：**https://10.0.56.200:3011**（接受自簽憑證警告）
 
 ---
 
@@ -282,7 +282,7 @@ FORCE_FRONTEND_BUILD=1 docker compose up -d --build
 bash scripts/diagnose.sh
 ```
 
-瀏覽器開：**http://10.0.56.130:3011**
+瀏覽器開：**http://10.0.56.200:3011**
 
 ---
 
@@ -307,7 +307,7 @@ docker compose up -d --build
 docker compose ps
 ```
 
-瀏覽器：**https://10.0.56.130:3011**
+瀏覽器：**https://10.0.56.200:3011**
 
 ---
 
@@ -449,7 +449,7 @@ docker compose up -d --build
 docker compose logs app --tail 20 | grep -i mqtt
 ```
 
-請用 **https://10.0.56.130:3011** 開啟（不要用 `http://`）
+請用 **https://10.0.56.200:3011** 開啟（不要用 `http://`）
 
 ---
 
@@ -535,7 +535,7 @@ git fetch origin && git reset --hard origin/main
 bash scripts/deploy.sh
 ```
 
-瀏覽器請用 **https://10.0.56.130:3011**（不是 `http://`）
+瀏覽器請用 **https://10.0.56.200:3011**（不是 `http://`）
 
 ---
 

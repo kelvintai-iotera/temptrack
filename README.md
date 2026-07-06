@@ -11,7 +11,9 @@ cp .env.default .env
 bash scripts/deploy.sh
 ```
 
-Access: **https://\<server-ip\>:3011** (self-signed cert — accept the browser warning)
+Access: **https://10.0.56.200:3011** (self-signed cert — accept the browser warning)
+
+Set `SERVER_PUBLIC_IP` in `.env` if the server IP changes. Physical gateways use `SERVER_PUBLIC_IP:1883` for MQTT.
 
 Login: `admin` / `admin123` — change in production.
 

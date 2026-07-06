@@ -98,7 +98,7 @@ echo "=== listening ports (3011) ==="
 echo ""
 
 echo "=== .env keys (values hidden) ==="
-for key in NODE_PORT USE_HTTP JWT_SECRET MQTT_HOST POSTGRES_HOST; do
+for key in NODE_PORT USE_HTTP JWT_SECRET MQTT_HOST POSTGRES_HOST SERVER_PUBLIC_IP; do
   if grep -q "^${key}=" .env 2>/dev/null; then
     echo "  ${key}=<set>"
   else
@@ -108,5 +108,10 @@ done
 echo ""
 
 echo "Access URL:"
-echo "  https://<server-ip>:3011  (default — accept self-signed cert)"
+SERVER_IP="10.0.56.200"
+if grep -q '^SERVER_PUBLIC_IP=' .env 2>/dev/null; then
+  SERVER_IP=$(grep '^SERVER_PUBLIC_IP=' .env | cut -d= -f2-)
+fi
+echo "  https://${SERVER_IP}:3011  (accept self-signed cert)"
+echo "  Gateway MQTT: ${SERVER_IP}:1883"
 echo "=============================================="

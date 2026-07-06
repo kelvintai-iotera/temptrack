@@ -106,7 +106,13 @@ docker compose -f "$APP_DIR/docker-compose.yml" ps
 
 echo "------------------------------------------------"
 echo "✅ eLogbook is now running!"
-echo "📍 Access GUI at: https://<your-server-ip>:3011"
+SERVER_IP="${SERVER_PUBLIC_IP:-10.0.56.200}"
+if [ -f "$APP_DIR/.env" ]; then
+  _ip=$(grep '^SERVER_PUBLIC_IP=' "$APP_DIR/.env" 2>/dev/null | cut -d= -f2-)
+  [ -n "$_ip" ] && SERVER_IP="$_ip"
+fi
+echo "📍 Access GUI at: https://${SERVER_IP}:3011"
+echo "📡 Gateway MQTT broker: ${SERVER_IP}:1883"
 echo "   (accept the self-signed certificate warning in your browser)"
 echo "🔧 Troubleshoot:  bash scripts/diagnose.sh"
 echo "🔑 Ensure JWT_SECRET and MQTT_PASSWORD are set in .env"

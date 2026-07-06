@@ -55,6 +55,15 @@ export async function getSystemStatus({ startedAt, mqttClient, beaconRepository 
     uptime_seconds: uptimeSeconds,
     database,
     mqtt,
+    public: {
+      server_ip: process.env.SERVER_PUBLIC_IP || null,
+      web_url: process.env.SERVER_PUBLIC_IP
+        ? `https://${process.env.SERVER_PUBLIC_IP}:${process.env.NODE_PORT || process.env.PORT || 3011}`
+        : null,
+      mqtt_url: process.env.SERVER_PUBLIC_IP
+        ? `${process.env.SERVER_PUBLIC_IP}:${process.env.MQTT_PORT || 1883}`
+        : null,
+    },
     counts: {
       gateways: gatewayCount,
       beacons: beaconCount,
