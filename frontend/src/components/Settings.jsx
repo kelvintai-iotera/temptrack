@@ -346,6 +346,28 @@ function SystemStatusSection() {
             tone={status.mqtt?.connected ? 'connected' : status.mqtt?.status}
           />
           <StatusCard
+            label="Last MQTT Data"
+            value={
+              status.mqtt?.lastMessageAt
+                ? new Date(status.mqtt.lastMessageAt).toLocaleTimeString()
+                : 'Never'
+            }
+            subValue={
+              status.mqtt?.secondsSinceLastMessage != null
+                ? `${status.mqtt.secondsSinceLastMessage}s ago · gateway publish check`
+                : 'No gateway messages received yet'
+            }
+            tone={
+              status.mqtt?.secondsSinceLastMessage == null
+                ? 'error'
+                : status.mqtt.secondsSinceLastMessage > 1200
+                  ? 'error'
+                  : status.mqtt.secondsSinceLastMessage > 300
+                    ? 'warn'
+                    : 'connected'
+            }
+          />
+          <StatusCard
             label="Gateways"
             value={String(status.counts?.gateways ?? 0)}
             subValue={`${status.counts?.in_memory_gateways ?? 0} loaded in memory`}

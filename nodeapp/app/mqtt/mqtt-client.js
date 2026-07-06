@@ -17,6 +17,7 @@ class MyMqttClient{
         this._mqttProcessor = mqttProcessor
         this._status = 'disconnected'
         this._subscribedTopics = []
+        this._lastMessageAt = null
     }
     
     async init(){
@@ -30,6 +31,10 @@ class MyMqttClient{
             host,
             port: Number(port),
             subscribedTopics: this._subscribedTopics.length,
+            lastMessageAt: this._lastMessageAt,
+            secondsSinceLastMessage: this._lastMessageAt
+                ? Math.floor((Date.now() - this._lastMessageAt.getTime()) / 1000)
+                : null,
         }
     }
 
@@ -133,6 +138,7 @@ class MyMqttClient{
         })
 
         client.on('message', async (topic, payload) => {
+            this._lastMessageAt = new Date()
             try {
                 const j = JSON.parse(payload)
                 if (j != null) {
