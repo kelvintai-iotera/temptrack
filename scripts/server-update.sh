@@ -24,7 +24,7 @@ elif grep -q '^SERVER_PUBLIC_IP=10.0.56.130' .env 2>/dev/null; then
 fi
 
 bash "$APP_DIR/scripts/repair-env.sh" 2>/dev/null || true
-sudo chown 1883:1883 mosquitto/config/passwd 2>/dev/null || true
+rm -f "$APP_DIR/mosquitto/config/passwd" 2>/dev/null || true
 sudo chown -R 1883:1883 mosquitto/data mosquitto/log 2>/dev/null \
   || chmod -R 777 mosquitto/data mosquitto/log 2>/dev/null || true
 

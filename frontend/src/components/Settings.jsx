@@ -511,7 +511,7 @@ function GatewayManagementSection() {
         <p className="text-sm text-muted mt-1">Manage MQTT gateway locations and check points.</p>
         {mqttBrokerHint && (
           <p className="text-xs text-muted mt-2">
-            Physical gateway MQTT broker: <span className="font-mono text-foreground">{mqttBrokerHint}</span> (no username/password)
+            Physical gateway MQTT broker: <span className="font-mono text-foreground">{mqttBrokerHint}</span> (no auth required on LAN)
           </p>
         )}
       </div>

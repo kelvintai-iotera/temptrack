@@ -68,7 +68,7 @@ else
   echo "Fix on each physical gateway:"
   echo "  1. MQTT broker / server = ${SERVER_IP}"
   echo "  2. Port = ${MQTT_PORT}"
-  echo "  3. Username / password = leave empty"
+  echo "  3. Username / password = leave empty (or any value — auth disabled on LAN)"
   echo "  4. MAC must match Settings → Gateways"
   echo ""
   echo "Also check: gateway powered on, same LAN as server, firewall allows ${MQTT_PORT}."

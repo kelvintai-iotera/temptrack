@@ -37,7 +37,7 @@ services:
       entrypoint: ["/bin/sh", "/mosquitto/config/docker-entrypoint.sh"]
       restart: unless-stopped
       healthcheck:
-        test: ["CMD-SHELL", "mosquitto_pub -h 127.0.0.1 -p 1883 -t healthcheck/ping -m 1 -q 0 -u \"$$MQTT_USER\" -P \"$$MQTT_PASSWORD\" || exit 1"]
+        test: ["CMD-SHELL", "mosquitto_pub -h 127.0.0.1 -p 1883 -t healthcheck/ping -m 1 -q 0 || exit 1"]
         interval: 15s
         timeout: 5s
         retries: 3
