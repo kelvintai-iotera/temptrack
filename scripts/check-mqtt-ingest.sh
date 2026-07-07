@@ -48,19 +48,20 @@ echo "=== App MQTT status (from logs) ==="
 docker compose logs app --tail 30 2>/dev/null | grep -iE 'mqtt|gateway|subscribe' || echo "  (no mqtt lines)"
 echo ""
 
-echo "=== Live listen test (20 seconds) ==="
-echo "Waiting for gateway publishes on /+/connect_packet/adv_publish ..."
-echo "(Press Ctrl+C to stop early)"
+echo "=== Live listen test (20 seconds, auto-stops) ==="
+echo "Listening for gateway publishes on /+/connect_packet/adv_publish ..."
 echo ""
-timeout 20 docker compose exec -T mqtt-broker mosquitto_sub \
+GOT_MSG=0
+if docker compose exec -T mqtt-broker mosquitto_sub \
   -h 127.0.0.1 -p 1883 \
-  -t '/+/connect_packet/adv_publish' -v 2>/dev/null \
-  || true
+  -t '/+/connect_packet/adv_publish' -v \
+  -W 20 -C 1 2>/dev/null; then
+  GOT_MSG=1
+fi
 
 echo ""
 echo "=============================================="
-if timeout 1 docker compose exec -T mqtt-broker mosquitto_sub \
-  -h 127.0.0.1 -p 1883 -t '/+/connect_packet/adv_publish' -C 1 -W 1 >/dev/null 2>&1; then
+if [ "$GOT_MSG" = "1" ]; then
   echo "✅ MQTT messages detected — data path is working."
 else
   echo "❌ No MQTT messages in the last 20s."
