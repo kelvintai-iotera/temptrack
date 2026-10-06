@@ -1,0 +1,15 @@
+{
+  "name": "ble-tracker-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BLE realtime tracking prototype: RSSI ingest, weighted centroid, EMA, WebSocket",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.3"
+  }
+}

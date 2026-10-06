@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>藍牙裝置即時追蹤原型</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f1419;
+      --panel: #1a222c;
+      --line: #2c3a4a;
+      --text: #e8eef4;
+      --muted: #93a4b5;
+      --accent: #3d8bfd;
+      --dot: #ff4d4f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+    h1 { font-size: 18px; margin: 0; font-weight: 600; }
+    .status { font-size: 13px; color: var(--muted); }
+    .status.ok { color: #6ee7b7; }
+    .status.bad { color: #fca5a5; }
+    main { padding: 20px 24px 32px; }
+    canvas {
+      display: block;
+      width: min(100%, 960px);
+      height: auto;
+      background: #111820;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+    }
+    .meta {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>藍牙裝置即時追蹤 · Weighted Centroid + EMA + Lerp</h1>
+    <div id="status" class="status">連線中…</div>
+  </header>
+  <main>
+    <canvas id="floor" width="800" height="600"></canvas>
+    <p id="meta" class="meta">等待定位資料</p>
+  </main>
+  <script>
+    const canvas = document.getElementById('floor');
+    const ctx = canvas.getContext('2d');
+    const statusEl = document.getElementById('status');
+    const metaEl = document.getElementById('meta');
+    const LERP = 0.14;
+
+    const display = { x: 400, y: 300 };
+    const target = { x: 400, y: 300 };
+    let gateways = [
+      { gateway_id: 'gw-1', x: 120, y: 80 },
+      { gateway_id: 'gw-2', x: 680, y: 90 },
+      { gateway_id: 'gw-3', x: 400, y: 520 },
+    ];
+    let latest = null;
+
+    function lerp(from, to, t) {
+      return from + (to - from) * t;
+    }
+
+    function setStatus(text, ok) {
+      statusEl.textContent = text;
+      statusEl.className = 'status ' + (ok ? 'ok' : 'bad');
+    }
+
+    function connect() {
+      const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const socket = new WebSocket(protocol + '//' + location.host + '/ws');
+
+      socket.addEventListener('open', () => setStatus('WebSocket 已連線', true));
+      socket.addEventListener('close', () => {
+        setStatus('已斷線，2 秒後重連', false);
+        setTimeout(connect, 2000);
+      });
+      socket.addEventListener('error', () => setStatus('連線錯誤', false));
+      socket.addEventListener('message', (event) => {
+        const data = JSON.parse(event.data);
+        if (Array.isArray(data.gateways) && data.gateways.length) {
+          gateways = data.gateways;
+        }
+        if (Number.isFinite(data.x) && Number.isFinite(data.y)) {
+          target.x = data.x;
+          target.y = data.y;
+          latest = data;
+        }
+      });
+    }
+
+    function drawGrid() {
+      ctx.strokeStyle = '#1c2733';
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= canvas.width; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= canvas.height; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+    }
+
+    function drawGateways() {
+      for (const gateway of gateways) {
+        ctx.beginPath();
+        ctx.fillStyle = '#3d8bfd';
+        ctx.arc(gateway.x, gateway.y, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#c9d6e3';
+        ctx.font = '12px Segoe UI, sans-serif';
+        ctx.fillText(gateway.gateway_id, gateway.x + 14, gateway.y + 4);
+      }
+    }
+
+    function drawDevice() {
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255, 77, 79, 0.18)';
+      ctx.arc(display.x, display.y, 22, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.fillStyle = '#ff4d4f';
+      ctx.arc(display.x, display.y, 8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawGrid();
+      drawGateways();
+      drawDevice();
+    }
+
+    function tick() {
+      display.x = lerp(display.x, target.x, LERP);
+      display.y = lerp(display.y, target.y, LERP);
+      draw();
+
+      if (latest) {
+        metaEl.textContent =
+          '平滑座標 (' + display.x.toFixed(1) + ', ' + display.y.toFixed(1) + ')'
+          + ' · EMA (' + latest.x.toFixed(1) + ', ' + latest.y.toFixed(1) + ')'
+          + (latest.raw
+            ? ' · 質心 (' + latest.raw.x.toFixed(1) + ', ' + latest.raw.y.toFixed(1) + ')'
+            : '');
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    connect();
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>
