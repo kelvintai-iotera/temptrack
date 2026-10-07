@@ -15,7 +15,7 @@
 ### Ubuntu 更新
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 docker compose up -d --build
 ```
@@ -57,7 +57,7 @@ docker compose up -d --build
 ### Ubuntu 更新步驟
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 
 # 若曾遇 Permission denied，先停容器並改回目錄擁有權
 docker compose down
@@ -126,7 +126,7 @@ docker compose logs -f app
 ### Ubuntu 更新步驟
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin
 git reset --hard origin/main
 docker compose up --build -d
@@ -165,7 +165,7 @@ docker compose up --build -d
 ### Ubuntu 更新步驟
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 docker compose down
 sudo chown -R $USER:$USER nodeapp
 git fetch origin && git reset --hard origin/main
@@ -188,7 +188,7 @@ docker compose up --build -d
 ### Ubuntu
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 docker compose up -d --build
 sleep 15
@@ -215,7 +215,7 @@ docker compose logs app --tail 20
 ### Ubuntu（請依序執行）
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 docker compose down
 bash scripts/fix-permissions.sh
 git fetch origin && git reset --hard origin/main
@@ -241,7 +241,7 @@ docker compose logs app --tail 30
 ### Ubuntu 部署
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 bash scripts/repair-env.sh
 sed -i 's/^USE_HTTP=1/USE_HTTP=0/' .env 2>/dev/null || true
@@ -272,7 +272,7 @@ bash scripts/diagnose.sh
 ### Ubuntu 部署
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 bash scripts/repair-env.sh
 # 若 .env 沒有 USE_HTTP，加入：
@@ -300,7 +300,7 @@ bash scripts/diagnose.sh
 ### Ubuntu
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 docker compose down
 docker compose up -d --build
@@ -334,7 +334,7 @@ docker compose ps
 ### Ubuntu 更新
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 bash scripts/repair-env.sh
 bash scripts/deploy.sh
@@ -360,7 +360,7 @@ bash scripts/deploy.sh
 ### Ubuntu
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 bash scripts/repair-env.sh
 docker compose down
@@ -389,7 +389,7 @@ docker compose logs app --tail 10 | grep -i mqtt
 ### Ubuntu（請整段執行）
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 docker compose down
 sudo rm -f mosquitto/config/passwd
@@ -415,7 +415,7 @@ Healthcheck 訂閱 `$SYS/broker/version`，但 Mosquitto 預設 `sys_interval=0`
 ### Ubuntu
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 docker compose down
 docker compose up -d
@@ -442,7 +442,7 @@ docker compose ps
 ### Ubuntu 更新
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 docker compose down
 docker compose up -d --build
@@ -467,7 +467,7 @@ docker compose logs app --tail 20 | grep -i mqtt
 ### Ubuntu 更新
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 docker compose down
 sudo rm -f mosquitto/config/passwd
@@ -503,7 +503,7 @@ docker compose ps
 ### Ubuntu 更新
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 docker compose down
 sudo chown -R $USER:$USER nodeapp
 git fetch origin && git reset --hard origin/main
@@ -528,7 +528,7 @@ docker compose up --build -d
 ### Ubuntu 更新
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 docker compose down
 sudo chown -R $USER:$USER nodeapp
 git fetch origin && git reset --hard origin/main
@@ -595,7 +595,7 @@ MQTT_PASSWORD=<請改成強密碼>
 ### Ubuntu 更新步驟
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 docker compose down
 sudo chown -R $USER:$USER nodeapp
 git fetch origin && git reset --hard origin/main
@@ -642,7 +642,7 @@ bash scripts/deploy.sh
 ### Ubuntu 更新步驟
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 docker compose down
 sudo chown -R $USER:$USER nodeapp
 git fetch origin && git reset --hard origin/main
@@ -673,7 +673,7 @@ docker compose up --build -d
 ### Ubuntu 更新步驟
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 docker compose down
 sudo chown -R $USER:$USER nodeapp
 git fetch origin

@@ -17,14 +17,14 @@ After completing any code or config change in this repo:
 ## Ubuntu server update (always include after push)
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 bash scripts/server-update.sh
 ```
 
 Or step by step:
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 git fetch origin && git reset --hard origin/main
 export GIT_COMMIT=$(git rev-parse --short HEAD)
 docker compose build --no-cache app

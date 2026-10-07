@@ -23,13 +23,13 @@ echo "(If they still use the old IP 10.0.56.130, no data will arrive.)"
 echo ""
 
 echo "=== Registered gateways (DB) ==="
-docker compose exec -T postgresql-db psql -U docker -d elogbook -t -A -F' | ' \
+docker compose exec -T postgresql-db psql -U docker -d temptrack -t -A -F' | ' \
   -c 'SELECT id, mac_addr FROM gateway ORDER BY id;' 2>/dev/null \
   || echo "  (could not query database)"
 echo ""
 
 echo "=== Expected MQTT topics ==="
-docker compose exec -T postgresql-db psql -U docker -d elogbook -t -A \
+docker compose exec -T postgresql-db psql -U docker -d temptrack -t -A \
   -c "SELECT '/' || mac_addr || '/connect_packet/adv_publish' FROM gateway ORDER BY id;" 2>/dev/null \
   | while read -r topic; do
     [ -n "$topic" ] && echo "  $topic"

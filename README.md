@@ -1,12 +1,12 @@
-# TempTrack (eLogbook)
+# TempTrack
 
 IoT beacon temperature monitoring — real-time dashboard, MQTT ingestion, PostgreSQL storage.
 
 ## Quick deploy (Ubuntu + Docker)
 
 ```bash
-git clone https://github.com/iotdev2251/eLogbook.git
-cd eLogbook
+git clone https://github.com/kelvintai-iotera/temptrack.git
+cd temptrack
 cp .env.default .env
 bash scripts/deploy.sh
 ```
@@ -22,7 +22,7 @@ Troubleshoot: `bash scripts/diagnose.sh`
 **Ubuntu server** (after each GitHub update):
 
 ```bash
-cd ~/eLogbook
+cd ~/temptrack
 bash scripts/server-update.sh
 ```
 

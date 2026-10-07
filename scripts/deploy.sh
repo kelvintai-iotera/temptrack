@@ -2,7 +2,7 @@
 
 # Configuration
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-echo "🚀 Starting deployment for eLogbook in $APP_DIR..."
+echo "🚀 Starting deployment for TempTrack in $APP_DIR..."
 
 # 1. Check if Docker is installed
 if ! [ -x "$(command -v docker)" ]; then
@@ -107,7 +107,7 @@ echo "📊 Deployment complete! Current status:"
 docker compose -f "$APP_DIR/docker-compose.yml" ps
 
 echo "------------------------------------------------"
-echo "✅ eLogbook is now running!"
+echo "✅ TempTrack is now running!"
 SERVER_IP="${SERVER_PUBLIC_IP:-10.0.56.200}"
 if [ -f "$APP_DIR/.env" ]; then
   _ip=$(grep '^SERVER_PUBLIC_IP=' "$APP_DIR/.env" 2>/dev/null | cut -d= -f2-)
