@@ -4,13 +4,33 @@
 
 ---
 
+## [2026-11-12] YKT-S05 解析強化（D948 無溫濕度）
+
+### 修改內容
+
+1. 實機 MAC `D948…`（非文件樣例 `D94B…`）時，以 **MAC 錨定** 解析 MFR（含公司 ID 剝除／小端 `594B`／MAC 反序）
+2. 自動匯入前綴改為 `D94`（同時覆蓋 D948／D94B）
+3. 解析失敗時寫 warn log（`YKT parse miss … mfr=`），方便對照 Gateway 原始封包
+4. 接受 `MFR`／`mfr`／`manufacturerData` 欄位名
+
+### Ubuntu 更新
+
+```bash
+cd ~/temptrack
+bash scripts/server-update.sh
+```
+
+Settings → `NEW_BEACON_PREFIX` 請含 `D94`。若仍無溫濕度：裝置需 `AT+PROTOCOL=3`（私有廣播 1），並用 `docker compose logs app | grep YKT` 看原始 MFR。
+
+---
+
 ## [2026-11-12] YKT-S05 私有廣播解析 + 濕度
 
 ### 修改內容
 
 1. **MFR 解析**：新增 YKT-S05 私有廣播 1（廠商 ID `4B59`、協議 `0x08`/`0x09`）→ 溫度／濕度／電量
 2. **資料庫**：`beacon`、`beacon_history` 新增可空欄位 `humidity`（單位 0.01%）
-3. **API／History／CSV／前端卡片**：顯示濕度；自動匯入前綴預設加入 `D94B`
+3. **API／History／CSV／前端卡片**：顯示濕度；自動匯入前綴預設加入 `D94`
 4. 既有 Minew／Legacy 解析不變（無濕度時顯示 —）
 
 ### Ubuntu 更新
@@ -20,7 +40,7 @@ cd ~/temptrack
 bash scripts/server-update.sh
 ```
 
-部署後若 DB 未自動 migrate，確認 migration `20261112100000_add_humidity` 已套用。Settings → `NEW_BEACON_PREFIX` 建議包含 `D94B`（YKT MAC）。
+部署後若 DB 未自動 migrate，確認 migration `20261112100000_add_humidity` 已套用。Settings → `NEW_BEACON_PREFIX` 建議包含 `D94`（YKT MAC）。
 
 ---
 

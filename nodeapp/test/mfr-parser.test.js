@@ -64,4 +64,31 @@ describe('parseMfrPayload', () => {
         expect(r.humidity).toBe(8882)
         expect(r.battery).toBe(100)
     })
+
+    test('parses YKT via MAC anchor when company ID is stripped (D948 OUI)', () => {
+        // ver + MAC D94854011F38 + bat + temp 22.91 + hum 88.82 + flags
+        const hex = '08D94854011F386408F322B20100'
+        const r = parseMfrPayload(hex, 'D94854011F38')
+        expect(r.profile).toBe('ykt-s05-mac')
+        expect(r.temp).toBe(229)
+        expect(r.humidity).toBe(8882)
+        expect(r.battery).toBe(100)
+    })
+
+    test('parses YKT with little-endian company ID 594B', () => {
+        const hex = '594B08D94854011F386408F322B20100'
+        const r = parseMfrPayload(hex, 'D94854011F38')
+        expect(r.profile).toBe('ykt-s05')
+        expect(r.temp).toBe(229)
+        expect(r.humidity).toBe(8882)
+    })
+
+    test('parses YKT MAC-reversed payload', () => {
+        // MAC bytes reversed in MFR: 381F015448D9
+        const hex = '4B5908381F015448D96408F322B20100'
+        const r = parseMfrPayload(hex, 'D94854011F38')
+        expect(['ykt-s05', 'ykt-s05-mac']).toContain(r.profile)
+        expect(r.temp).toBe(229)
+        expect(r.humidity).toBe(8882)
+    })
 })

@@ -2,7 +2,7 @@ import { loggerFactory } from '../../config/logger.js';
 import { BEACON_STATUS } from '../beacon/beacon-status.js'
 import { mapBeaconForClient } from '../beacon/beacon-api.js'
 import { normalizeMac } from '../beacon/mac-utils.js'
-import { parseMfrPayload } from './mfr-parser.js'
+import { parseMfrPayload, macIsYktFamily, normalizeMfrHex } from './mfr-parser.js'
 import { isPlausibleSensorTemp, TEMP_UNKNOWN } from '../beacon/sensor-values.js'
 
 const logger = loggerFactory('mqtt-processor')
@@ -47,8 +47,18 @@ class MqttProcessor{
     }
 
     async _onBeaconData(updatedData, beacon, gateway) {
-        const mfr = updatedData.MFR
-        if (mfr == undefined) return;
+        // Gateways may use MFR / mfr / manufacturerData
+        const mfr = updatedData.MFR ?? updatedData.mfr ?? updatedData.manufacturerData
+        if (mfr == undefined) {
+            if (macIsYktFamily(updatedData.mac)) {
+                logger.warn(
+                    'YKT beacon %s update missing MFR field (keys: %s)',
+                    normalizeMac(updatedData.mac),
+                    Object.keys(updatedData || {}).join(',')
+                )
+            }
+            return
+        }
 
         if (!gateway) {
             logger.warn('Skipping beacon update without gateway: %s', updatedData.mac)
@@ -56,6 +66,21 @@ class MqttProcessor{
         }
 
         const parsed = parseMfrPayload(mfr, updatedData.mac)
+        if (
+            macIsYktFamily(updatedData.mac)
+            && parsed.temp == null
+            && parsed.humidity == null
+        ) {
+            const hex = normalizeMfrHex(mfr)
+            logger.warn(
+                'YKT parse miss mac=%s profile=%s mfrLen=%d mfr=%s',
+                normalizeMac(updatedData.mac),
+                parsed.profile || 'null',
+                hex.length / 2,
+                hex.slice(0, 80)
+            )
+        }
+
         const rssiParsed = parseInt(updatedData.rssi, 10)
         const rssi = Number.isFinite(rssiParsed) ? rssiParsed : null
 

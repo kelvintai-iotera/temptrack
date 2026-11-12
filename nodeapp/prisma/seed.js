@@ -8,7 +8,7 @@ const WORKSHOP_ID = 'Workshop'
 const OFFICE_DESK_ID = 'OfficeDesk'
 const OFFICE_DESK_MAC = 'CE6299527263'
 const LEGACY_GATEWAY_02_ID = 'Gateway 02'
-const NEW_BEACON_PREFIX_VALUE = '80ECCC0,80ECCB0,D94B'
+const NEW_BEACON_PREFIX_VALUE = '80ECCC0,80ECCB0,D94';
 
 /** Rename existing DB gateway (seed alone does not update old primary keys). */
 async function migrateLegacyGatewayToWorkshop() {
