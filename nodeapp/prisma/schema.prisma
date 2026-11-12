@@ -34,6 +34,7 @@ model beacon {
   gateway_id  String
   gateway     gateway  @relation(fields: [gateway_id], references: id)
   temp        Int
+  humidity    Int?
   battery     Int
   rssi        Int
   status      String   @db.VarChar(5)
@@ -50,6 +51,7 @@ model beacon_history {
   gateway_mac_addr  String
   gateway_name  String
   temp        Int
+  humidity    Int?
   battery     Int
   rssi        Int
   status      String   @db.VarChar(5)

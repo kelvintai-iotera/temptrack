@@ -7,6 +7,7 @@ export function mergeBeaconRecord(prev, incoming) {
     ...prev,
     ...incoming,
     temp: incoming.temp != null ? incoming.temp : prev.temp,
+    humidity: incoming.humidity != null ? incoming.humidity : prev.humidity,
     battery: incoming.battery != null ? incoming.battery : prev.battery,
     rssi: incoming.rssi != null ? incoming.rssi : prev.rssi,
     gateway_name: incoming.gateway_name ?? prev.gateway_name,

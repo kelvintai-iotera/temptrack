@@ -1,7 +1,7 @@
 import { loggerFactory } from '../../config/logger.js';
 import { BEACON_STATUS } from './beacon-status.js'
 import { c } from '../../config/constant.js'
-import { formatClientTemp, formatClientBattery } from './sensor-values.js'
+import { formatClientTemp, formatClientHumidity, formatClientBattery } from './sensor-values.js'
 
 const MAX_RECORD = c.BEACON_API_PAGE_RECORD
 
@@ -14,6 +14,7 @@ function mapBeaconForClient(beacon) {
         name: beacon.name,
         nickname: beacon.nickname,
         temp: formatClientTemp(beacon.temp),
+        humidity: formatClientHumidity(beacon.humidity),
         battery: formatClientBattery(beacon.battery),
         rssi: beacon.rssi,
         status: beacon.status,

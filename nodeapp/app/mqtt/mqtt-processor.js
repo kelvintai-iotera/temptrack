@@ -86,6 +86,9 @@ class MqttProcessor{
             } else if (beacon.battery == null) {
                 beacon.battery = 0
             }
+            if (parsed.humidity != null) {
+                beacon.humidity = parsed.humidity
+            }
             if (rssi != null) {
                 beacon.rssi = rssi
             }

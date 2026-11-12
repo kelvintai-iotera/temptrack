@@ -50,6 +50,7 @@ class BeaconRepository {
             mac_addr: normalizeMac(mac_addr),
             report_at: new Date().toISOString(),
             temp: TEMP_UNKNOWN,
+            humidity: null,
             battery: 0,
             rssi: 0,
             status: BEACON_STATUS.IN
@@ -153,6 +154,7 @@ class BeaconRepository {
             beacon_mac_addr: beacon.mac_addr,
             report_at: beacon.report_at,
             temp: beacon.temp ?? TEMP_UNKNOWN,
+            humidity: beacon.humidity ?? null,
             battery: beacon.battery ?? 0,
             rssi: beacon.rssi ?? 0,
             status: beacon.status,

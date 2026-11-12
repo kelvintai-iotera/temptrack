@@ -42,5 +42,26 @@ describe('parseMfrPayload', () => {
         const r = parseMfrPayload(hex, '88ECCCCE5D79')
         expect(r.profile).toBe('minew-ht')
         expect(r.temp).toBe(245)
+        expect(r.humidity).toBeNull()
+    })
+
+    test('parses YKT-S05 private broadcast 1 (protocol 0x08)', () => {
+        // company 4B59, ver 08, MAC D94B54000001, bat 100, temp 22.91°C, hum 88.82%
+        const hex = '4B5908D94B540000016408F322B20100'
+        const r = parseMfrPayload(hex, 'D94B54000001')
+        expect(r.profile).toBe('ykt-s05')
+        expect(r.temp).toBe(229)
+        expect(r.humidity).toBe(8882)
+        expect(r.battery).toBe(100)
+    })
+
+    test('parses YKT-S05 when MFR includes AD length/type wrapper', () => {
+        // PDF sample uses protocol 0x09 with same layout
+        const hex = '02010610FF4B5909D94B550010186408F322B20100'
+        const r = parseMfrPayload(hex, 'D94B55001018')
+        expect(r.profile).toBe('ykt-s05')
+        expect(r.temp).toBe(229)
+        expect(r.humidity).toBe(8882)
+        expect(r.battery).toBe(100)
     })
 })

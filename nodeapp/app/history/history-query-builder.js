@@ -6,6 +6,7 @@ const QUERY_FIELDS = Object.freeze({
     nickname: { type: 'string' },
     status: { type: 'status' },
     temp: { type: 'temp' },
+    humidity: { type: 'humidity' },
     battery: { type: 'number' },
     rssi: { type: 'number' },
     report_at: { type: 'datetime' },
@@ -63,6 +64,14 @@ function coerceFilterValue(field, op, rawValue) {
         return Math.round(num * 10)
     }
 
+    if (meta.type === 'humidity') {
+        const num = Number(rawValue)
+        if (Number.isNaN(num)) {
+            throw new Error(`Invalid humidity: ${rawValue}`)
+        }
+        return Math.round(num * 100)
+    }
+
     if (meta.type === 'number') {
         const num = Number(rawValue)
         if (Number.isNaN(num)) {
@@ -87,7 +96,7 @@ function assertOpAllowed(field, op) {
     const opKey = normalizeOp(op)
     let allowed = STRING_OPS
 
-    if (meta.type === 'temp' || meta.type === 'number') {
+    if (meta.type === 'temp' || meta.type === 'humidity' || meta.type === 'number') {
         allowed = NUMERIC_OPS
     } else if (meta.type === 'datetime') {
         allowed = DATETIME_OPS

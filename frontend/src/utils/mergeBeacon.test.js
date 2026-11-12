@@ -14,4 +14,10 @@ describe('mergeBeaconRecord', () => {
     const incoming = { mac_addr: 'AA', temp: 30 };
     expect(mergeBeaconRecord(prev, incoming).temp).toBe(30);
   });
+
+  it('preserves humidity when update omits it', () => {
+    const prev = { mac_addr: 'AA', humidity: 55.5 };
+    const incoming = { mac_addr: 'AA', humidity: null };
+    expect(mergeBeaconRecord(prev, incoming).humidity).toBe(55.5);
+  });
 });

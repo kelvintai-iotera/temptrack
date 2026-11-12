@@ -13,6 +13,7 @@ class BeaconDataStore {
             name: beacon.name,
             nickname: beacon.nickname,
             temp: beacon.temp ?? TEMP_UNKNOWN,
+            humidity: beacon.humidity ?? null,
             battery: beacon.battery ?? 0,
             rssi: beacon.rssi ?? 0,
             status: beacon.status,

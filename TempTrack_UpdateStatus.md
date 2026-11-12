@@ -4,6 +4,26 @@
 
 ---
 
+## [2026-11-12] YKT-S05 私有廣播解析 + 濕度
+
+### 修改內容
+
+1. **MFR 解析**：新增 YKT-S05 私有廣播 1（廠商 ID `4B59`、協議 `0x08`/`0x09`）→ 溫度／濕度／電量
+2. **資料庫**：`beacon`、`beacon_history` 新增可空欄位 `humidity`（單位 0.01%）
+3. **API／History／CSV／前端卡片**：顯示濕度；自動匯入前綴預設加入 `D94B`
+4. 既有 Minew／Legacy 解析不變（無濕度時顯示 —）
+
+### Ubuntu 更新
+
+```bash
+cd ~/temptrack
+bash scripts/server-update.sh
+```
+
+部署後若 DB 未自動 migrate，確認 migration `20261112100000_add_humidity` 已套用。Settings → `NEW_BEACON_PREFIX` 建議包含 `D94B`（YKT MAC）。
+
+---
+
 ## [2026-06-08] Dashboard 三區圖表
 
 ### 修改內容

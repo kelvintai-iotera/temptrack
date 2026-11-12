@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Thermometer,
+  Droplets,
   Battery,
   Clock,
   AlertTriangle,
@@ -70,7 +71,7 @@ export const BeaconCard = ({ beacon, isAdmin, onEdit, highlighted = false }) => 
         </div>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 lg:gap-4 items-center w-full min-w-0">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-8 gap-3 lg:gap-4 items-center w-full min-w-0">
         <div className="col-span-2 sm:col-span-1 min-w-0 lg:col-span-1">
           <h3 className="text-sm font-bold truncate" title={displayName}>
             {displayName}
@@ -113,6 +114,13 @@ export const BeaconCard = ({ beacon, isAdmin, onEdit, highlighted = false }) => 
             tempLevel === 'warn' && 'text-orange-600 dark:text-orange-400 font-semibold',
             tempLevel === 'critical' && 'text-red-800 dark:text-red-300 font-bold'
           )}
+        />
+
+        <Metric
+          icon={Droplets}
+          label="Humidity"
+          value={beacon.humidity != null ? `${beacon.humidity}%` : '—'}
+          iconClass="text-sky-600 dark:text-sky-400"
         />
 
         <Metric

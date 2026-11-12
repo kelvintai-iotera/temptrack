@@ -6,6 +6,7 @@ export const HISTORY_FIELDS = [
   { id: 'nickname', label: 'Nickname' },
   { id: 'status', label: 'Status' },
   { id: 'temp', label: 'Temperature (°C)' },
+  { id: 'humidity', label: 'Humidity (%)' },
   { id: 'battery', label: 'Battery (%)' },
   { id: 'rssi', label: 'RSSI' },
   { id: 'report_at', label: 'Report Time' },
@@ -47,7 +48,7 @@ const OPS_BY_TYPE = {
 };
 
 export function fieldType(fieldId) {
-  if (fieldId === 'temp' || fieldId === 'battery' || fieldId === 'rssi') return 'number';
+  if (fieldId === 'temp' || fieldId === 'humidity' || fieldId === 'battery' || fieldId === 'rssi') return 'number';
   if (fieldId === 'report_at') return 'datetime';
   if (fieldId === 'status') return 'status';
   return 'string';

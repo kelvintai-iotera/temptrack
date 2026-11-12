@@ -64,7 +64,15 @@ function FilterRow({ row, onChange, onRemove, canRemove }) {
           type={row.field === 'report_at' ? 'datetime-local' : 'text'}
           value={row.value}
           onChange={(e) => onChange({ ...row, value: e.target.value })}
-          placeholder={isIn ? 'in, out, alert' : row.field === 'temp' ? 'e.g. 32' : 'Value'}
+          placeholder={
+            isIn
+              ? 'in, out, alert'
+              : row.field === 'temp'
+                ? 'e.g. 32'
+                : row.field === 'humidity'
+                  ? 'e.g. 55'
+                  : 'Value'
+          }
           className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
         />
       )}
@@ -362,7 +370,7 @@ export const History = ({ currentUser }) => {
           </div>
         ) : (
           <div className="overflow-x-auto -mx-2 md:mx-0">
-            <table className="w-full min-w-[960px] text-sm">
+            <table className="w-full min-w-[1040px] text-sm">
               <thead>
                 <tr className="text-left text-muted border-b border-border">
                   <th className="py-2 pr-3 font-medium">Report Time</th>
@@ -370,6 +378,7 @@ export const History = ({ currentUser }) => {
                   <th className="py-2 pr-3 font-medium">MAC</th>
                   <th className="py-2 pr-3 font-medium">Gateway</th>
                   <th className="py-2 pr-3 font-medium">Temp</th>
+                  <th className="py-2 pr-3 font-medium">Humidity</th>
                   <th className="py-2 pr-3 font-medium">Battery</th>
                   <th className="py-2 pr-3 font-medium">RSSI</th>
                   <th className="py-2 font-medium">Status</th>
@@ -383,6 +392,7 @@ export const History = ({ currentUser }) => {
                     <td className="py-2 pr-3 font-mono text-xs">{row.beacon_mac_addr}</td>
                     <td className="py-2 pr-3">{row.gateway_name || '—'}</td>
                     <td className="py-2 pr-3">{row.temp != null ? `${row.temp}°C` : '—'}</td>
+                    <td className="py-2 pr-3">{row.humidity != null ? `${row.humidity}%` : '—'}</td>
                     <td className="py-2 pr-3">{row.battery != null ? `${row.battery}%` : '—'}</td>
                     <td className="py-2 pr-3">{row.rssi ?? '—'}</td>
                     <td className="py-2">{formatBeaconStatus(String(row.status || '').toLowerCase())}</td>

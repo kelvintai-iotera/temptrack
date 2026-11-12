@@ -1,7 +1,7 @@
 import { loggerFactory } from '../../config/logger.js';
 import { BEACON_STATUS } from '../beacon/beacon-status.js';
 import { c } from '../../config/constant.js'
-import { formatClientTemp, formatClientBattery } from '../beacon/sensor-values.js'
+import { formatClientTemp, formatClientHumidity, formatClientBattery } from '../beacon/sensor-values.js'
 import { buildWhereFromFilters, validateOrderDir, validateOrderField } from './history-query-builder.js'
 import { parseHistoryQuerySql } from './history-sql-parser.js'
 import pkg from '@prisma/client'
@@ -121,6 +121,7 @@ class BeaconHistoryApi {
             'gateway_name',
             'gateway_mac_addr',
             'temp_c',
+            'humidity_pct',
             'battery',
             'rssi',
             'status',
@@ -136,6 +137,7 @@ class BeaconHistoryApi {
                 row.gateway_name,
                 row.gateway_mac_addr,
                 row.temp,
+                row.humidity,
                 row.battery,
                 row.rssi,
                 row.status,
@@ -172,6 +174,7 @@ class BeaconHistoryApi {
                 nickname: beacon.nickname,
                 beacon_mac_addr: beacon.beacon_mac_addr,
                 temp: formatClientTemp(beacon.temp),
+                humidity: formatClientHumidity(beacon.humidity),
                 battery: formatClientBattery(beacon.battery),
                 rssi: beacon.rssi,
                 status: beacon.status.toUpperCase(),
