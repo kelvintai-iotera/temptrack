@@ -136,6 +136,26 @@ class BeaconDataStore {
         return prisma.gateway.delete({ where: { id } })
     }
 
+    async deleteBeaconByMac(mac_addr) {
+        const mac = normalizeMac(mac_addr)
+        try {
+            return await prisma.beacon.delete({ where: { mac_addr: mac } })
+        } catch (e) {
+            if (e?.code === 'P2025') {
+                return null
+            }
+            logger.error(e)
+            throw e
+        }
+    }
+
+    async deleteHistoryByMac(mac_addr) {
+        const mac = normalizeMac(mac_addr)
+        return prisma.beacon_history.deleteMany({
+            where: { beacon_mac_addr: mac },
+        })
+    }
+
     async countBeaconsForGateway(gatewayId) {
         return prisma.beacon.count({ where: { gateway_id: gatewayId } })
     }

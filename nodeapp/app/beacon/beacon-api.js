@@ -95,6 +95,14 @@ class BeaconApi{
             clients: beacons.map(mapBeaconForClient),
         }
     }
+
+    async delete(mac_addr) {
+        const beacon = await this._beaconRepository.deleteBeacon(mac_addr)
+        if (beacon == null) {
+            return { error: 'NOT_FOUND' }
+        }
+        return { mac_addr: beacon.mac_addr }
+    }
 }
 
 export { BeaconApi, mapBeaconForClient }

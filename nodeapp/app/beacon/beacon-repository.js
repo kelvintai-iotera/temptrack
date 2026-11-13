@@ -235,6 +235,18 @@ class BeaconRepository {
         }
         return { gateway, beacons: updatedBeacons }
     }
+
+    async deleteBeacon(mac_addr) {
+        const mac = normalizeMac(mac_addr)
+        const beacon = this._beacons[mac]
+        if (beacon == null) {
+            return null
+        }
+        delete this._beacons[mac]
+        await this._beaconDataStore.deleteBeaconByMac(mac)
+        await this._beaconDataStore.deleteHistoryByMac(mac)
+        return beacon
+    }
 }
 
 export { BeaconRepository }

@@ -41,6 +41,16 @@ export function BeaconProvider({ children }) {
     });
   }, [recordSocketActivity]);
 
+  const removeBeacon = useCallback((mac_addr) => {
+    if (!mac_addr) return;
+    setBeacons((prev) => {
+      if (!prev[mac_addr]) return prev;
+      const next = { ...prev };
+      delete next[mac_addr];
+      return next;
+    });
+  }, []);
+
   const refreshBeacons = useCallback(async () => {
     try {
       const res = await axios.get('/beacons');
@@ -63,9 +73,17 @@ export function BeaconProvider({ children }) {
     if (!socket) return undefined;
 
     const onData = (data) => mergeBeaconUpdates(data);
+    const onRemoved = (payload) => {
+      const mac = payload?.mac_addr;
+      if (mac) removeBeacon(mac);
+    };
     socket.on('ADDED_DATA', onData);
-    return () => socket.off('ADDED_DATA', onData);
-  }, [socket, mergeBeaconUpdates]);
+    socket.on('REMOVED_DATA', onRemoved);
+    return () => {
+      socket.off('ADDED_DATA', onData);
+      socket.off('REMOVED_DATA', onRemoved);
+    };
+  }, [socket, mergeBeaconUpdates, removeBeacon]);
 
   const beaconList = useMemo(() => (
     Object.values(beacons).sort((a, b) => {
@@ -86,6 +104,7 @@ export function BeaconProvider({ children }) {
     updatesPerMin,
     loadError,
     mergeBeaconUpdates,
+    removeBeacon,
     refreshBeacons,
     reconnect,
   }), [
@@ -95,6 +114,7 @@ export function BeaconProvider({ children }) {
     updatesPerMin,
     loadError,
     mergeBeaconUpdates,
+    removeBeacon,
     refreshBeacons,
     reconnect,
   ]);

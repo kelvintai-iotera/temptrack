@@ -22,7 +22,7 @@ export const RealTimeStatus = ({ currentUser }) => {
   const [sortDir, setSortDir] = useState('asc');
   const [statusFilter, setStatusFilter] = useState('all');
   const [editingBeacon, setEditingBeacon] = useState(null);
-  const { beacons, beaconList: allSorted, isConnected, updatesPerMin, mergeBeaconUpdates } = useBeacons();
+  const { beacons, beaconList: allSorted, isConnected, updatesPerMin, mergeBeaconUpdates, removeBeacon } = useBeacons();
   const { config } = useSettings();
   const isAdmin = currentUser?.role === 'admin';
   const highlightRef = useRef(null);
@@ -169,6 +169,7 @@ export const RealTimeStatus = ({ currentUser }) => {
         open={editingBeacon != null}
         onClose={() => setEditingBeacon(null)}
         onSaved={mergeBeaconUpdates}
+        onDeleted={removeBeacon}
       />
     </div>
   );

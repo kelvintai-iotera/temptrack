@@ -10,7 +10,7 @@ import {
 } from '../utils/tempAlerts';
 
 export const Alerts = ({ currentUser }) => {
-  const { beaconList, isConnected, mergeBeaconUpdates } = useBeacons();
+  const { beaconList, isConnected, mergeBeaconUpdates, removeBeacon } = useBeacons();
   const { config } = useSettings();
   const [editingBeacon, setEditingBeacon] = useState(null);
   const isAdmin = currentUser?.role === 'admin';
@@ -85,6 +85,7 @@ export const Alerts = ({ currentUser }) => {
         open={editingBeacon != null}
         onClose={() => setEditingBeacon(null)}
         onSaved={mergeBeaconUpdates}
+        onDeleted={removeBeacon}
       />
     </div>
   );

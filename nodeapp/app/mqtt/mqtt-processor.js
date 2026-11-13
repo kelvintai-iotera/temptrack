@@ -142,6 +142,13 @@ class MqttProcessor{
         }
     }
 
+    publishClientRemove(mac_addr) {
+        if (!mac_addr) {
+            return
+        }
+        this._io.emit('REMOVED_DATA', { mac_addr })
+    }
+
     setBeaconsStatus() {
         const expired = new Date()
         expired.setSeconds(expired.getSeconds() - this._expiredSeconds)

@@ -38,6 +38,24 @@ function addBeaconRouter(beaconRepository, mqttProcessor) {
         }
     })
 
+    router.delete('/:mac', adminMiddleware, async (req, res) => {
+        const mac = req.params.mac
+
+        try {
+            const result = await beaconApi.delete(mac)
+
+            if (result.error === 'NOT_FOUND') {
+                return res.status(404).json({ msg: 'Beacon not found' })
+            }
+
+            mqttProcessor.publishClientRemove(result.mac_addr)
+            res.json({ mac_addr: result.mac_addr })
+        } catch (err) {
+            logger.error(err)
+            res.status(500).json({ msg: 'Failed to delete beacon' })
+        }
+    })
+
     router.get('/b/:mac', async (req, res, next) => {
         const mac = req.params.mac
         const result = beaconApi.get(mac)
