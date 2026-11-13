@@ -91,4 +91,32 @@ describe('parseMfrPayload', () => {
         expect(r.temp).toBe(229)
         expect(r.humidity).toBe(8882)
     })
+
+    test('parses YKT-S06 private broadcast 1 (protocol 0x0A) from PDF sample', () => {
+        // 13FF 4B59 0A MAC bat ch st src1=25.00°C src2=60.00%RH flags
+        const hex = '02010613FF4B590AD94B5400000164000009C417700100'
+        const r = parseMfrPayload(hex, 'D94B54000001')
+        expect(r.profile).toBe('ykt-s06')
+        expect(r.temp).toBe(250)
+        expect(r.humidity).toBe(6000)
+        expect(r.battery).toBe(100)
+    })
+
+    test('parses YKT-S06 dual-temp channel without humidity', () => {
+        // channel 2 DS18B20: src1=20.00°C src2=21.00°C → store src1 only
+        const hex = '4B590AD94B5400000164020007D008340100'
+        const r = parseMfrPayload(hex, 'D94B54000001')
+        expect(r.profile).toBe('ykt-s06')
+        expect(r.temp).toBe(200)
+        expect(r.humidity).toBeNull()
+        expect(r.battery).toBe(100)
+    })
+
+    test('does not mis-parse S06 frame as S05', () => {
+        const hex = '4B590AD94B5400000164000009C417700100'
+        const r = parseMfrPayload(hex, 'D94B54000001')
+        expect(r.profile).toBe('ykt-s06')
+        expect(r.temp).toBe(250)
+        expect(r.humidity).toBe(6000)
+    })
 })

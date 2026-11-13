@@ -2,12 +2,17 @@
 
 const TEMP_PLAUSIBLE_MIN = 100  // 10.0°C
 const TEMP_PLAUSIBLE_MAX = 450  // 45.0°C
-/** YKT-S05 rated range −40~125°C (stored as 0.1°C tenths). */
+/** YKT-S05 / built-in SHT rated range −40~125°C (stored as 0.1°C tenths). */
 const YKT_TEMP_PLAUSIBLE_MIN = -400
 const YKT_TEMP_PLAUSIBLE_MAX = 1250
+/** YKT-S06 probe channels (DS18B20 / NTC / PT100) can reach about −55~450°C. */
+const YKT_S06_TEMP_PLAUSIBLE_MIN = -550
+const YKT_S06_TEMP_PLAUSIBLE_MAX = 4500
 const TEMP_UNKNOWN = 9999       // written to DB when clearing bad readings
 const HUMIDITY_PLAUSIBLE_MIN = 0
 const HUMIDITY_PLAUSIBLE_MAX = 10000 // 100.00%
+/** YKT-S06 invalid probe reading sentinel (int16 0x8000). */
+const YKT_SENSOR_INVALID_RAW = -32768
 
 function isPlausibleSensorTemp(tempTenths) {
     return tempTenths != null && tempTenths >= TEMP_PLAUSIBLE_MIN && tempTenths <= TEMP_PLAUSIBLE_MAX
@@ -19,9 +24,19 @@ function isPlausibleYktTemp(tempTenths) {
         && tempTenths <= YKT_TEMP_PLAUSIBLE_MAX
 }
 
+function isPlausibleYktS06Temp(tempTenths) {
+    return tempTenths != null
+        && tempTenths >= YKT_S06_TEMP_PLAUSIBLE_MIN
+        && tempTenths <= YKT_S06_TEMP_PLAUSIBLE_MAX
+}
+
 function formatClientTemp(tempTenths) {
     if (tempTenths == null) return null
-    if (isPlausibleSensorTemp(tempTenths) || isPlausibleYktTemp(tempTenths)) {
+    if (
+        isPlausibleSensorTemp(tempTenths)
+        || isPlausibleYktTemp(tempTenths)
+        || isPlausibleYktS06Temp(tempTenths)
+    ) {
         return tempTenths / 10
     }
     return null
@@ -53,11 +68,15 @@ export {
     TEMP_PLAUSIBLE_MAX,
     YKT_TEMP_PLAUSIBLE_MIN,
     YKT_TEMP_PLAUSIBLE_MAX,
+    YKT_S06_TEMP_PLAUSIBLE_MIN,
+    YKT_S06_TEMP_PLAUSIBLE_MAX,
     TEMP_UNKNOWN,
     HUMIDITY_PLAUSIBLE_MIN,
     HUMIDITY_PLAUSIBLE_MAX,
+    YKT_SENSOR_INVALID_RAW,
     isPlausibleSensorTemp,
     isPlausibleYktTemp,
+    isPlausibleYktS06Temp,
     isValidHumidity,
     formatClientTemp,
     formatClientHumidity,
